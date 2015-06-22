@@ -2,7 +2,8 @@
 
 import RPi.GPIO as GPIO
 import time
-GPIO.setmode(GPIO.BCM)
+import sys
+import signal
 
 # Sensor GPIOs:
 # PIN    GPIO
@@ -17,51 +18,78 @@ GPIO.setmode(GPIO.BCM)
 # 10     15
 # 11     17
 
-file = open("SensorData.txt", "w") #stores data file in same directory as this program file
+log_file = open("SensorData.txt", "w")
 
-#Define function to measure charge time
-def RC_Analog(gpio):
-    print('In RC_Analog')
-    print('GPIO: %s' % gpio)
-    #Discharge capacitor
-    print('Discharging cap')
-    GPIO.setup(gpio, GPIO.OUT)
-    GPIO.output(gpio, GPIO.LOW)
-    time.sleep(0.1) #in seconds, suspends execution.
-    print('Starting charge cycle')
+
+def signal_handler(signal, frame):
+    """
+    Handle Ctrl-C
+
+    :param signal:
+    :param frame:
+    :return:
+    """
+    print '\nCtrl-C detected, cleaning up...'
+    cleanup(force_exit=True)
+
+
+def cleanup(force_exit=False):
+    GPIO.cleanup()
+    log_file.close()
+    if force_exit is True:
+        sys.exit(0)
+
+
+def timestamp():
+    """
+    Return our standard timestamp, the unix epic seconds, accurate to 4 decimal places.
+
+    :return: str
+    """
+    return '{0:.4f}'.format(time.time())
+
+
+def rc_analog(gpio, cycles=10):
     start_time = time.time()
-    GPIO.setup(gpio, GPIO.IN)
-    while (GPIO.input(gpio)==GPIO.LOW):
-        pass
-    # GPIO.setup(gpio, GPIO.IN, pull_up_down=GPIO.PUD_OFF)
-    # GPIO.wait_for_edge(gpio, GPIO.RISING)
+    for _ in range(cycles):
+        GPIO.setup(gpio, GPIO.OUT)  # Discharge capacitor
+        GPIO.output(gpio, GPIO.LOW)
+        time.sleep(0.1)  # Allow time to discharge cap
+        GPIO.setup(gpio, GPIO.IN)
+        while GPIO.input(gpio) == GPIO.LOW:
+            pass
     end_time = time.time()
-    print('Difference: %s' % str(end_time - start_time))
     return end_time - start_time
 
-    #Main program loop
-while True:
-    time.sleep(1)
-    ts = time.time()
-    reading = RC_Analog(24) #store counts in a variable
-    counter = 0
-    time_start = 0
-    time_end = 0
 
-    print ts, reading  #print counts using GPIO4 and time
-    file.write(str(ts) + " " + str(reading) + "\n") #write data to file
+def usage():
+    print('Usage: soil_sensor.py <gpio> [<cycles=10>]')
+    sys.exit(0)
 
-    while (reading < 10.00):
-        time_start = time.time()
-        counter = counter + 1
-        if counter >= 50:
-            break
-    time_end = time.time()
-    if (counter >= 25 and time_end - time_start <= 60): # if you get 25 measurements that indicate dry soil in less than one minute, need to water
-        print('Not enough water for your plants to survive! Please water now.') #comment this out for testing
-#    else:
- #     print('Your plants are safe and healthy, yay!')
 
-GPIO.cleanup()
-file.close()
+def main(argv):
+    try:
+        gpio = int(argv[1])
+    except:
+        usage()
+
+    try:
+        cycles = int(argv[2])
+    except ValueError:
+        usage()
+    except IndexError:
+        cycles = 10
+
+    while True:
+        reading = rc_analog(gpio, cycles)
+        msg = timestamp() + ", " + "GPIO: %s, Cycles: %s, %s" % (gpio, cycles, str(reading))
+        print msg
+        log_file.write(msg + '\n')
+
+
+signal.signal(signal.SIGINT, signal_handler)
+# GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+main(sys.argv)
+cleanup()
 
