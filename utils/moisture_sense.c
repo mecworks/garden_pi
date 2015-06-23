@@ -1,16 +1,5 @@
 /*
-Rpms calculates the fan speed in RPMs of a fan with blades
-Compile as follows:
-
-    gcc -O3 -o rpms rpms.c -lwiringPi
-
-Run as follows:
-
-    sudo ./rpms
-
-    For a fan with 11 blades, sample for 200ms on WiringPi GPIO 2 (RPi GPIO R1:21/R2:27)
-    
-    sudo ./rpms -p 200 -b 11 -g 2
+Calculate R/C charge time of capacitive sensors on Raspberry Pi GPIOs
 
  */
 #include <stdio.h>
@@ -19,33 +8,30 @@ Run as follows:
 #include <stdlib.h>
 #include <wiringPi.h>
 #include <getopt.h>
-#include <time.h>
 
-// the event counter 
-volatile float eventCounter = 0;
+// the event counter
 volatile float cycles = 7;
 volatile float discharge_time = 250;
-volatile int gpio = 24;
-
-float rpms = 0;
-
-// -------------------------------------------------------------------------
-// myInterrupt:  called every time an event occurs
-void myInterrupt(void) {
-    eventCounter++;
-}
+volatile int gpio_number = 24;
+unsigned int start, end;
 
 void usage(void) {
-    fprintf (stderr, "Usage: moisture_sense -c <cycles (5)> -d (capacitor discharge time in ms (100)> -g <RPi GPIO>.\n");
+    fprintf (stderr, "Usage: moisture_sense -c <cycles (5)> -d <capacitor discharge time in ms> -g <RPi GPIO>.\n");
 }
 
 // -------------------------------------------------------------------------
 // main
 int main(int argc, char *argv[]) {
 
-    clock_t start, end;
-    double cpu_time_used;
+    printf("Start of main()\n");;
 
+    // Set up the wiringPi library
+    if (wiringPiSetupGpio() < 0) {
+        fprintf (stderr, "Unable to setup wiringPi: %s\n", strerror (errno));
+        return 1;
+    }
+
+    printf("Before for options parsing\n");
     int option;
     while ((option = getopt (argc, argv, "c:d:g:h")) != -1) {
         switch (option) {
@@ -56,7 +42,7 @@ int main(int argc, char *argv[]) {
             discharge_time = atof(optarg);
             break;
           case 'g':
-            gpio = atof(optarg);
+            gpio_number = atof(optarg);
         break;
           case 'h':
             usage();
@@ -69,27 +55,21 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    // Set up the wiringPi library
-    if (wiringPiSetupGpio() < 0) {
-        fprintf (stderr, "Unable to setup wiringPi: %s\n", strerror (errno));
-        return 1;
-        }
-
+    printf("Before for loop\n");
+    int x;
     for (x=0; x<=cycles; x++) {
-        start = clock()
-        // set up GPIO to send an interrupt on high-to-low transitions
-        // and attach myInterrupt() to the interrupt
-        if (wiringPiISR(gpio, INT_EDGE_FALLING, &myInterrupt) < 0) {
-          fprintf (stderr, "Unable to setup ISR: %s\n", strerror (errno));
-          return 1;
+        printf("In for loop\n");
+        start = micros();
+        pinMode(gpio_number, OUTPUT);
+        //pullUpDnControl(gpio_number, PUD_OFF);
+        digitalWrite(gpio_number, LOW);
+        delay(discharge_time);
+        pinMode(gpio_number, INPUT);
+        while (digitalRead(gpio_number) != HIGH){
+            delayMicroseconds(1);
         }
-
-        // Output our RPM
-        eventCounter = 0;
-        delay(discharge_time); // wait
-        rpms = eventCounter / cycles * 60.0 * 1000/discharge_time;
-        printf("%d\n", (int)rpms);
-
-    return 0;
+        end = micros();
+        printf("GPIO: %s, RC Charge Time: %d\n", gpio_number, end - start);
     }
+    return 0;
 }
