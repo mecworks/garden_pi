@@ -19,6 +19,7 @@ Run as follows:
 #include <stdlib.h>
 #include <wiringPi.h>
 #include <getopt.h>
+#include <time.h>
 
 // the event counter 
 volatile float eventCounter = 0;
@@ -31,60 +32,64 @@ float rpms = 0;
 // -------------------------------------------------------------------------
 // myInterrupt:  called every time an event occurs
 void myInterrupt(void) {
-   eventCounter++;
+    eventCounter++;
 }
 
 void usage(void) {
-  fprintf (stderr, "Usage: rpms -b <blades (7)> -p <sampling period length in ms (250)> -g <wiringPi GPIO (0 -> GPIO_17)>.\n");
+    fprintf (stderr, "Usage: moisture_sense -c <cycles (5)> -d (capacitor discharge time in ms (100)> -g <RPi GPIO>.\n");
 }
 
 // -------------------------------------------------------------------------
 // main
 int main(int argc, char *argv[]) {
- 
-  int option;
-  while ((option = getopt (argc, argv, "c:d:g:h")) != -1) {
-    switch (option)
-      {
-      case 'c':
-        cycles = atof(optarg);
+
+    clock_t start, end;
+    double cpu_time_used;
+
+    int option;
+    while ((option = getopt (argc, argv, "c:d:g:h")) != -1) {
+        switch (option) {
+          case 'c':
+            cycles = atof(optarg);
+            break;
+          case 'd':
+            discharge_time = atof(optarg);
+            break;
+          case 'g':
+            gpio = atof(optarg);
         break;
-      case 'd':
-	    discharge_time = atof(optarg);
-        break;
-      case 'g':
-        gpio = atof(optarg);
-	break;
-      case 'h':
-        usage();
-        exit(-1);
-      case '?':
-        usage();
-        exit(-1);
-      default:
-        abort ();
-      }
-  }
+          case 'h':
+            usage();
+            exit(-1);
+          case '?':
+            usage();
+            exit(-1);
+          default:
+            abort ();
+        }
+    }
 
-  // Set up the wiringPi library
-  if (wiringPiSetupGpio() < 0) {
-      fprintf (stderr, "Unable to setup wiringPi: %s\n", strerror (errno));
-      return 1;
-  }
+    // Set up the wiringPi library
+    if (wiringPiSetupGpio() < 0) {
+        fprintf (stderr, "Unable to setup wiringPi: %s\n", strerror (errno));
+        return 1;
+        }
 
-  // set up GPIO to send an interrupt on high-to-low transitions
-  // and attach myInterrupt() to the interrupt
-  if (wiringPiISR(gpio, INT_EDGE_FALLING, &myInterrupt) < 0) {
-      fprintf (stderr, "Unable to setup ISR: %s\n", strerror (errno));
-      return 1;
-  }
+    for (x=0; x<=cycles; x++) {
+        start = clock()
+        // set up GPIO to send an interrupt on high-to-low transitions
+        // and attach myInterrupt() to the interrupt
+        if (wiringPiISR(gpio, INT_EDGE_FALLING, &myInterrupt) < 0) {
+          fprintf (stderr, "Unable to setup ISR: %s\n", strerror (errno));
+          return 1;
+        }
 
-  // Output our RPM
-  eventCounter = 0;
-  delay(period); // wait
-  rpms = eventCounter / blades * 60.0 * 1000/period;
-  printf("%d\n", (int)rpms);
+        // Output our RPM
+        eventCounter = 0;
+        delay(discharge_time); // wait
+        rpms = eventCounter / cycles * 60.0 * 1000/discharge_time;
+        printf("%d\n", (int)rpms);
 
-  return 0;
+    return 0;
+    }
 }
-
