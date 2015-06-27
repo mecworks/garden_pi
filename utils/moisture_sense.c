@@ -8,18 +8,21 @@ Calculate R/C charge time of capacitive sensors on Raspberry Pi GPIOs
 #include <stdlib.h>
 #include <wiringPi.h>
 #include <getopt.h>
+#define DEFAULT_DISCHARGE_DELAY 10
+#define DEFAULT_TIMEOUT 1000
+#define DEFAULT_CYCLES 10
 
 void usage(void) {
-    fprintf (stderr, "Usage: moisture_sense -c <cycles (<1000)> -d <capacitor discharge time in ms> -g <RPi GPIO>.\n");
+    fprintf (stderr, "Usage: moisture_sense -g <RPi GPIO> -c [cycles (ms): 1000] -d [capacitor discharge time (ms): 10] -t [timeout (ms): 1000].\n");
 }
 
 // main
 int main(int argc, char *argv[]) {
 
-    int c,x,re[1000],med=0;
-    int cycles;
-    int discharge_delay;
-    int gpio;
+    unsigned int c,x,re[1000],med=0;
+    int cycles = -1;
+    int discharge_delay = -1;
+    int gpio = -1;
 
     int option;
     while ((option = getopt (argc, argv, "c:d:g:h")) != -1) {
@@ -40,27 +43,45 @@ int main(int argc, char *argv[]) {
             break;
           case 'h':
             usage();
-            exit(-1);
+            exit(0);
           case '?':
             usage();
-            exit(-1);
-          default:
-            usage();
             exit(0);
+          default:
+            abort();
         }
+    }
+
+    // Required arguments
+    if (gpio == -1){
+        usage();
+        exit(-1);
+    }
+    // default values
+    if (discharge_delay == -1)
+        discharge_delay = DEFAULT_DISCHARGE_DELAY;
+    if (cycles == -1)
+        cycles = DEFAULT_CYCLES;
+
+    wiringPiSetup();
+    int pin;
+    for (pin = 0 ; pin < 16 ; ++pin) {
+        pinMode (pin, OUTPUT) ;
+        digitalWrite (pin, LOW) ;
     }
 
     if (wiringPiSetupGpio()<0)
         exit (1) ;
 
     for (x=0;x<cycles;x++) {
-        c=0;
-        pinMode (gpio, OUTPUT);
+        c=0;;
+        pinMode (gpio, OUTPUT);;
         digitalWrite (gpio, LOW);
         delay(discharge_delay);
         pinMode (gpio, INPUT);
-        while (digitalRead(gpio)==LOW)
+        while (digitalRead(gpio)==LOW) {
             c++;
+        }
         re[x]=c;
     }
     med=0;

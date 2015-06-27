@@ -50,17 +50,18 @@ def timestamp():
 
 
 def rc_analog(gpio, cycles=10):
-    start_time = time.time()
+    #start_time = time.time()
+    c = 0
     for _ in range(cycles):
         GPIO.setup(gpio, GPIO.OUT)  # Discharge capacitor
         GPIO.output(gpio, GPIO.LOW)
         time.sleep(0.1)  # Allow time to discharge cap
         GPIO.setup(gpio, GPIO.IN)
         while GPIO.input(gpio) == GPIO.LOW:
-            pass
-    end_time = time.time()
-    return end_time - start_time
-
+            c += 1
+    #end_time = time.time()
+    #return end_time - start_time
+    return c
 
 def usage():
     print('Usage: soil_sensor.py <gpio> [<cycles=10>]')
