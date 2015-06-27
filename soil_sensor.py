@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-import RPi.GPIO as GPIO
 import time
 import sys
 import signal
+from rcsensor import rcsensor
 
 # Sensor GPIOs:
 # PIN    GPIO
@@ -20,7 +20,6 @@ import signal
 
 log_file = open("SensorData.txt", "w")
 
-
 def signal_handler(signal, frame):
     """
     Handle Ctrl-C
@@ -34,7 +33,6 @@ def signal_handler(signal, frame):
 
 
 def cleanup(force_exit=False):
-    GPIO.cleanup()
     log_file.close()
     if force_exit is True:
         sys.exit(0)
@@ -49,19 +47,9 @@ def timestamp():
     return '{0:.4f}'.format(time.time())
 
 
-def rc_analog(gpio, cycles=10):
-    #start_time = time.time()
-    c = 0
-    for _ in range(cycles):
-        GPIO.setup(gpio, GPIO.OUT)  # Discharge capacitor
-        GPIO.output(gpio, GPIO.LOW)
-        time.sleep(0.1)  # Allow time to discharge cap
-        GPIO.setup(gpio, GPIO.IN)
-        while GPIO.input(gpio) == GPIO.LOW:
-            c += 1
-    #end_time = time.time()
-    #return end_time - start_time
-    return c
+def rc_analog(gpio, cycles=200, discharge_delay=10):
+    return rcsensor.get_rc_counts(gpio, cycles, discharge_delay)
+
 
 def usage():
     print('Usage: soil_sensor.py <gpio> [<cycles=10>]')
@@ -89,8 +77,6 @@ def main(argv):
 
 
 signal.signal(signal.SIGINT, signal_handler)
-# GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BCM)
 main(sys.argv)
 cleanup()
 

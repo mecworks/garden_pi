@@ -13,6 +13,6 @@ rcsensor: rcsensor.c rcsense_lib
 clean:
 	rm rcsensor_cli rcsensor.so rcsensor.o rc_count.o || true
 
-install: rcsensor.so rcsensor_cli
+install:
 	cp -v rcsensor.so ../rcsensor/
 	cp -v rcsensor_cli ../utils/

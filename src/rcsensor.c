@@ -9,7 +9,7 @@ Python module
 #define DEFAULT_TIMEOUT 1000
 #define DEFAULT_CYCLES 10
 
-static PyObject* measure(PyObject *self, PyObject *args) {
+static PyObject* get_rc_counts(PyObject *self, PyObject *args) {
 
     unsigned int ret;
     int gpio = -1;
@@ -34,10 +34,10 @@ static PyObject* measure(PyObject *self, PyObject *args) {
 }
 
 static char rcsensor_docs[] =
-    "measure(): return a value which correlates to the charge time of an RC sensor.\n";
+    "get_rc_counts(): return a value which correlates to the charge time of an RC sensor.\n";
 
 static PyMethodDef rcsensor_funcs[] = {
-    {"measure", (PyCFunction)measure, METH_VARARGS,
+    {"get_rc_counts", (PyCFunction)get_rc_counts, METH_VARARGS,
     rcsensor_docs},
     {NULL, NULL, 0, NULL}
 };
