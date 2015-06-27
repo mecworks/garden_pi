@@ -58,3 +58,6 @@ target/
 
 # PyCharm's files
 .idea
+
+# Data files
+SensorData.txt
