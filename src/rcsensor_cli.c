@@ -9,11 +9,10 @@ Calculate R/C charge time of capacitive sensors on Raspberry Pi GPIOs
 #include <getopt.h>
 #include "rc_count.h"
 #define DEFAULT_DISCHARGE_DELAY 10
-#define DEFAULT_TIMEOUT 1000
 #define DEFAULT_CYCLES 10
 
 void usage(void) {
-    fprintf (stderr, "Usage: moisture_sense -g <RPi GPIO> -c [cycles (ms): 1000] -d [capacitor discharge time (ms): 10].\n");
+    fprintf (stderr, "Usage: moisture_sense -g <RPi GPIO> -c [cycles: 10] -d [capacitor discharge time (ms): 10].\n");
 }
 
 // main
