@@ -13,7 +13,7 @@ moisture_after_water = 28941
 relay_gpio =
 temp_sensor = 28-000005760fd1
 watering_duration = 120
-watering_min_wait_before_next_cycle = 2hr
+min_wait_between_cycles = 2hr
 
 [Zone 2]
 alias = Tomatoes, Onions and Rosemary
@@ -25,7 +25,7 @@ moisture_after_water = 23866
 relay_gpio =
 temp_sensor = 28-000005f7fe06
 watering_duration = 100
-watering_min_wait_before_next_cycle =
+min_wait_between_cycles =  2hr
 
 [Zone 3]
 alias = Basil
@@ -37,7 +37,7 @@ moisture_after_water = 25348
 relay_gpio =
 temp_sensor = 28-000005f8081d
 watering_duration = 20
-watering_min_wait_before_next_cycle =
+min_wait_between_cycles =  2hr
 
 [Zone 4]
 alias = Mint
@@ -49,5 +49,5 @@ moisture_after_water = 24525
 relay_gpio =
 temp_sensor = None
 watering_duration = 20
-watering_min_wait_before_next_cycle =
+min_wait_between_cycles =  2hr
 
