@@ -3,7 +3,9 @@
 import time
 import sys
 import signal
-from rcsensor import rcsensor
+
+from common import rcsensor
+
 
 # Sensor GPIOs:
 # PIN    GPIO
