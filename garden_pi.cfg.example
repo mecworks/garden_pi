@@ -8,30 +8,46 @@ alias = Tomatoes
 moisture_sensor_gpio = 22
 moisture_sensor_dry = 7770
 moisture_sensor_water = 18500
+moisture_water_threshold = 14753
+moisture_after_water = 28941
+relay_gpio =
 temp_sensor = 28-000005760fd1
 watering_duration = 120
+watering_min_wait_before_next_cycle = 2hr
 
 [Zone 2]
 alias = Tomatoes, Onions and Rosemary
 moisture_sensor_gpio = 23
 moisture_sensor_dry = 7118
 moisture_sensor_water = 17473
+moisture_water_threshold = 13299
+moisture_after_water = 23866
+relay_gpio =
 temp_sensor = 28-000005f7fe06
 watering_duration = 100
+watering_min_wait_before_next_cycle =
 
 [Zone 3]
 alias = Basil
 moisture_sensor_gpio = 24
 moisture_sensor_dry = 7170
 moisture_sensor_water = 17159
+moisture_water_threshold = 14967
+moisture_after_water = 25348
+relay_gpio =
 temp_sensor = 28-000005f8081d
 watering_duration = 20
+watering_min_wait_before_next_cycle =
 
 [Zone 4]
 alias = Mint
 moisture_sensor_gpio = 25
 moisture_sensor_dry = 7180
 moisture_sensor_water = 15456
+moisture_water_threshold = 14922
+moisture_after_water = 24525
+relay_gpio =
 temp_sensor = None
 watering_duration = 20
+watering_min_wait_before_next_cycle =
 
