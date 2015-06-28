@@ -1,6 +1,7 @@
 [Main]
 ambient_temp_sensor = 28-000005f8d181
 light_sensor_gpio = 21
+logfile = garden_pi.csv
 
 [Zone 1]
 alias = Tomatoes
