@@ -1,0 +1,36 @@
+[main]
+ambient_temp_sensor = 28-000005f8d181
+light_sensor_gpio = 21
+
+[zone 1]
+alias = Tomatoes
+moisture_sensor_gpio = 22
+moisture_sensor_dry = 7770
+moisture_sensor_water = 18500
+temp_sensor = 28-000005760fd1
+watering_duration = 120
+
+[zone 2]
+alias = Tomatoes, Onions and Rosemary
+moisture_sensor_gpio = 23
+moisture_sensor_dry = 7118
+moisture_sensor_water = 17473
+temp_sensor = 28-000005f7fe06
+watering_duration = 100
+
+[zone 3]
+alias = Basil
+moisture_sensor_gpio = 24
+moisture_sensor_dry = 7170
+moisture_sensor_water = 17159
+temp_sensor = 28-000005f8081d
+watering_duration = 20
+
+[zone 4]
+alias = Mint
+moisture_sensor_gpio = 25
+moisture_sensor_dry = 7180
+moisture_sensor_water = 15456
+temp_sensor = None
+watering_duration = 20
+
