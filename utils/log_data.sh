@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+#set -x
 
 BASE_DIR='/home/pi/prog/garden_pi'
 LOG_DIR="${BASE_DIR}/data"
