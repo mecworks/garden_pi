@@ -1,7 +1,7 @@
 # Some useful functions
 
 import time
-
+import sys
 
 def timestamp():
     """
@@ -18,6 +18,18 @@ def format_float(f):
         return " "
     else:
         return fmt.format(f)
+
+
+def progress_bar(progress_bar_time=1, end_val=100, bar_size=20):
+    for i in xrange(0, end_val+1):
+        percent = float(i) / end_val
+        hashes = '#' * int(round(percent * bar_size))
+        spaces = ' ' * (bar_size - len(hashes))
+        sys.stdout.write("\rPercent: [{0}] {1}%".format(hashes + spaces, int(round(percent * 100))))
+        sys.stdout.flush()
+        time.sleep(progress_bar_time/float(end_val))
+    sys.stdout.write('\n')
+    sys.stdout.flush()
 
 
 def conv_s2hms(seconds, short=False):
