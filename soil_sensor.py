@@ -15,7 +15,7 @@ from common import rcsensor
 # 18     24
 #
 # relays:
-# 5      3
+# 5      1
 # 8      14
 # 10     15
 # 11     17
