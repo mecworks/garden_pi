@@ -39,12 +39,16 @@ def water_time(zone_gpio):
 
 
 def water_zone(zone_gpio, t):
-    GPIO.output(zone_gpio, ON)
+    GPIO.output(zone_gpio, OFF)
     progress_bar(progress_bar_time=t)
     GPIO.output(zone_gpio, OFF)
 
 
 def cleanup(force_exit=False):
+    GPIO.output(zone_1_gpio, OFF)
+    GPIO.output(zone_2_gpio, OFF)
+    GPIO.output(zone_3_gpio, OFF)
+    GPIO.output(zone_4_gpio, OFF)
     GPIO.cleanup()
     if force_exit is True:
         sys.exit(0)
