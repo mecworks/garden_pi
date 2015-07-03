@@ -9,6 +9,7 @@ import common.csv_logger as cvs_logger
 import ConfigParser
 import ast
 from apscheduler.schedulers.background import BackgroundScheduler
+from common.utils import format_float
 
 # Config file
 config_file = './garden_pi.cfg'
@@ -31,12 +32,12 @@ zone_names = ['Zone 1', 'Zone 2', 'Zone 3', 'Zone 4']
 garden_pi_zones = {}
 for _zone in zone_names:
     alias = conf_parser.get(_zone, 'alias')
-    moisture_sensor_gpio = conf_parser.get(_zone, 'moisture_sensor_gpio')
-    relay_gpio = conf_parser.get(_zone, 'relay_gpio')
-    moisture_water_threshold = conf_parser.get(_zone, 'moisture_water_threshold')
-    watering_duration = conf_parser.get(_zone, 'watering_duration')
+    moisture_sensor_gpio = conf_parser.getint(_zone, 'moisture_sensor_gpio')
+    relay_gpio = conf_parser.getint(_zone, 'relay_gpio')
+    moisture_water_threshold = conf_parser.getint(_zone, 'moisture_water_threshold')
+    watering_duration = conf_parser.getint(_zone, 'watering_duration')
     temp_sensor_id = conf_parser.get(_zone, 'temp_sensor_id')
-    min_seconds_between_waterings = conf_parser.get(_zone, 'min_seconds_between_waterings')
+    min_seconds_between_waterings = conf_parser.getint(_zone, 'min_seconds_between_waterings')
     garden_pi_zones[_zone] = Zone(alias=alias,
                                   moisture_sensor_gpio=moisture_sensor_gpio,
                                   relay_gpio=relay_gpio,
@@ -48,16 +49,16 @@ for _zone in zone_names:
 
 def log_measurements():
     zone_1_moisture = garden_pi_zones['Zone 1'].moisture
-    zone_1_temp = garden_pi_zones['Zone 1'].temp
+    zone_1_temp = format_float(garden_pi_zones['Zone 1'].temp)
     zone_2_moisture = garden_pi_zones['Zone 2'].moisture
-    zone_2_temp = garden_pi_zones['Zone 2'].temp
+    zone_2_temp = format_float(garden_pi_zones['Zone 2'].temp)
     zone_3_moisture = garden_pi_zones['Zone 3'].moisture
-    zone_3_temp = garden_pi_zones['Zone 3'].temp
+    zone_3_temp = format_float(garden_pi_zones['Zone 3'].temp)
     zone_4_moisture = garden_pi_zones['Zone 4'].moisture
-    zone_4_temp = garden_pi_zones['Zone 4'].temp
+    zone_4_temp = format_float(garden_pi_zones['Zone 4'].temp)
     ambient_light = ambient_light_sensor.rc_count()
-    ambient_temp = ambient_temp_sensor.get_f()
-    cpu_temp = c_temp.cpu_temp_f
+    ambient_temp = format_float(ambient_temp_sensor.get_f())
+    cpu_temp = format_float(c_temp.cpu_temp_f)
     garden_pi_logger.log_csv(zone_1_moisture=zone_1_moisture,
                              zone_1_temp=zone_1_temp,
                              zone_2_moisture=zone_2_moisture,
