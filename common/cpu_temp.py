@@ -4,6 +4,7 @@
 import pexpect
 import re
 
+
 class CpuTemp(object):
 
     def __init__(self):
