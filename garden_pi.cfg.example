@@ -1,9 +1,9 @@
-[main]
+[Main]
 ambient_temp_sensor = 28-000005f8d181
-light_sensor_gpio = 21
-logfile = garden_pi.csv
+ambient_light_sensor_gpio = 21
+logfile = ./garden_pi.csv
 
-[zone_1]
+[Zone 1]
 alias = Tomatoes
 moisture_sensor_gpio = 22
 moisture_sensor_dry = 7770
@@ -13,9 +13,9 @@ moisture_after_water = 28941
 relay_gpio = 17
 temp_sensor = 28-000005760fd1
 watering_duration = 130
-min_wait_between_cycles = 2hr
+min_seconds_between_waterings = 18000
 
-[zone_2]
+[Zone 2]
 alias = Tomatoes, Onions and Rosemary
 moisture_sensor_gpio = 23
 moisture_sensor_dry = 7118
@@ -25,9 +25,9 @@ moisture_after_water = 23866
 relay_gpio = 130
 temp_sensor = 28-000005f7fe06
 watering_duration = 100
-min_wait_between_cycles =  2hr
+min_seconds_between_waterings = 18000
 
-[zone_3]
+[Zone 3]
 alias = Basil
 moisture_sensor_gpio = 24
 moisture_sensor_dry = 7170
@@ -37,9 +37,9 @@ moisture_after_water = 25348
 relay_gpio = 35
 temp_sensor = 28-000005f8081d
 watering_duration = 20
-min_wait_between_cycles =  2hr
+min_seconds_between_waterings = 18000
 
-[zone_4]
+[Zone 4]
 alias = Mint
 moisture_sensor_gpio = 25
 moisture_sensor_dry = 7180
@@ -49,5 +49,5 @@ moisture_after_water = 24525
 relay_gpio = 1
 temp_sensor = None
 watering_duration = 15
-min_wait_between_cycles =  2hr
+min_seconds_between_waterings = 18000
 
