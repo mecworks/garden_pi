@@ -39,7 +39,7 @@ def water_time(zone_gpio):
 
 
 def water_zone(zone_gpio, t):
-    GPIO.output(zone_gpio, OFF)
+    GPIO.output(zone_gpio, ON)
     progress_bar(progress_bar_time=t)
     GPIO.output(zone_gpio, OFF)
 
