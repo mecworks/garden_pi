@@ -5,6 +5,7 @@
 import logging
 import logging.handlers
 from common.utils import format_float
+from common.utils import timestamp as ts
 import os
 
 class CvsLogger(object):
