@@ -11,7 +11,7 @@ moisture_sensor_water = 18500
 moisture_water_threshold = 14753
 moisture_after_water = 28941
 relay_gpio = 17
-temp_sensor = 28-000005760fd1
+temp_sensor_id = 28-000005760fd1
 watering_duration = 120
 min_seconds_between_waterings = 18000
 
@@ -23,7 +23,7 @@ moisture_sensor_water = 17473
 moisture_water_threshold = 13299
 moisture_after_water = 23866
 relay_gpio = 15
-temp_sensor = 28-000005f7fe06
+temp_sensor_id = 28-000005f7fe06
 watering_duration = 120
 min_seconds_between_waterings = 18000
 
@@ -35,7 +35,7 @@ moisture_sensor_water = 17159
 moisture_water_threshold = 14967
 moisture_after_water = 25348
 relay_gpio = 14
-temp_sensor = 28-000005f8081d
+temp_sensor_id = 28-000005f8081d
 watering_duration = 25
 min_seconds_between_waterings = 18000
 
@@ -47,7 +47,7 @@ moisture_sensor_water = 15456
 moisture_water_threshold = 14922
 moisture_after_water = 24525
 relay_gpio = 1
-temp_sensor = None
+temp_sensor_id = None
 watering_duration = 10
 min_seconds_between_waterings = 18000
 
