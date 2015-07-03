@@ -3,7 +3,7 @@
 
 BASE_DIR='/home/pi/prog/garden_pi'
 LOG_DIR="${BASE_DIR}/data"
-LOG_FILE_NAME='garden_pi.csv'
+LOG_FILE_NAME='garden_pi-cron.csv'
 LOG_FILE="${LOG_DIR}/${LOG_FILE_NAME}"
 
 SENSOR_CMD="sudo $BASE_DIR/utils/rcsensor_cli"
