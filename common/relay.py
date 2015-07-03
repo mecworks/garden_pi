@@ -52,7 +52,8 @@ if __name__ == '__main__':
 
     import sys
     import time
-
+    
+    GPIO.setwarnings(False)
     def usage(prog):
         print('Usage: %s <gpio>' % prog)
         sys.exit(0)
@@ -64,7 +65,8 @@ if __name__ == '__main__':
             usage(argv[0])
         r = Relay(gpio)
         r.set_state(r.ON)
-        time.sleep(3)
+        time.sleep(10)
         r.set_state(r.OFF)
+        GPIO.cleanup()
 
     main(sys.argv)
