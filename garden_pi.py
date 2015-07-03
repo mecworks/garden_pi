@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # Pretty simple right now, just enough to water on a schedule and log the data
 
+import RPi.GPIO as GPIO
+GPIO.setwarnings(False)
 from common.zone import Zone
 from common.cpu_temp import CpuTemp
 from common.temp_sensor import TempSensor
@@ -10,6 +12,10 @@ import ConfigParser
 import ast
 from apscheduler.schedulers.background import BackgroundScheduler
 from common.utils import format_float
+import sys
+import signal
+import time
+import logging
 
 # Config file
 config_file = './garden_pi.cfg'
@@ -19,12 +25,13 @@ conf_parser.read(config_file)
 # General sensors
 ambient_temp_sensor_id = conf_parser.get('Main', 'ambient_temp_sensor')
 ambient_temp_sensor = TempSensor(ambient_temp_sensor_id)
-ambient_light_sensor_gpio = conf_parser.get('Main', 'ambient_light_sensor_gpio')
+ambient_light_sensor_gpio = conf_parser.getint('Main', 'ambient_light_sensor_gpio')
 ambient_light_sensor = RcSensor(gpio=ambient_light_sensor_gpio)
 c_temp = CpuTemp()
 
 # Log file
-log_file = conf_parser.get('Main', 'log_file')
+logging.basicConfig()
+log_file = conf_parser.get('Main', 'logfile')
 garden_pi_logger = cvs_logger.CvsLogger('./data/garden_pi.csv')
 
 # Initialize zones
@@ -49,16 +56,16 @@ for _zone in zone_names:
 
 def log_measurements():
     zone_1_moisture = garden_pi_zones['Zone 1'].moisture
-    zone_1_temp = format_float(garden_pi_zones['Zone 1'].temp)
+    zone_1_temp = garden_pi_zones['Zone 1'].temp
     zone_2_moisture = garden_pi_zones['Zone 2'].moisture
-    zone_2_temp = format_float(garden_pi_zones['Zone 2'].temp)
+    zone_2_temp = garden_pi_zones['Zone 2'].temp
     zone_3_moisture = garden_pi_zones['Zone 3'].moisture
-    zone_3_temp = format_float(garden_pi_zones['Zone 3'].temp)
+    zone_3_temp = garden_pi_zones['Zone 3'].temp
     zone_4_moisture = garden_pi_zones['Zone 4'].moisture
-    zone_4_temp = format_float(garden_pi_zones['Zone 4'].temp)
+    zone_4_temp = garden_pi_zones['Zone 4'].temp
     ambient_light = ambient_light_sensor.rc_count()
-    ambient_temp = format_float(ambient_temp_sensor.get_f())
-    cpu_temp = format_float(c_temp.cpu_temp_f)
+    ambient_temp = ambient_temp_sensor.get_f()
+    cpu_temp = c_temp.cpu_temp_f
     garden_pi_logger.log_csv(zone_1_moisture=zone_1_moisture,
                              zone_1_temp=zone_1_temp,
                              zone_2_moisture=zone_2_moisture,
@@ -74,8 +81,34 @@ def log_measurements():
 def water_zone(zone_object):
     pass
 
+def cleanup(force_exit=False):
+    scheduler.shutdown(wait=False)
+    GPIO.cleanup()
+    garden_pi_logger.log_csv(messg="SHUTTING DOWN")
+    if force_exit is True:
+        sys.exit(0)
+
+
+def signal_handler(signal, frame):
+    """
+    Handle Ctrl-C
+
+    :param signal:
+    :param frame:
+    :return:
+    """
+    print '\nCtrl-C detected, cleaning up...'
+    cleanup(force_exit=True)
+
+print('Starting Garden Pi')
+signal.signal(signal.SIGINT, signal_handler)
 scheduler = BackgroundScheduler()
-scheduler.add_job(log_voltages, trigger='interval', seconds=1, name='Voltage Logger', id='voltage_logger', max_instances=1)
-scheduler.add_job(log_measurements, trigger='interval', minutes=5, name='Data Logger', id='data_logger', max_instances=1)
-scheduler.add_job(log_current, name='Log Current', id='log_current')
+#scheduler.add_job(log_voltages, trigger='interval', seconds=1, name='Voltage Logger', id='voltage_logger', max_instances=1)
+scheduler.add_job(log_measurements, trigger='interval', seconds=20, name='Data Logger', id='data_logger', max_instances=1)
+#scheduler.add_job(log_current, name='Log Current', id='log_current')
 scheduler.start()
+
+while True:
+    time.sleep(1)
+
+
