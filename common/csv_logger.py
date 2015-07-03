@@ -12,12 +12,11 @@ class CvsLogger(object):
 
     def __init__(self, log_file_name):
         pass
-        self.header = 'TIMESTAMP, ZONE, ALIAS, AMBIENT TEMP, AMBIENT LIGHT, SOIL MOISTURE, SOIL TEMP, CPU TEMP, MESSG\n'
+        self.header = "TIMESTAMP, ZONE 1 MOISTURE, ZONE 1 TEMP, ZONE 2 MOISTURE, ZONE 2 TEMP, ZONE 3 MOISTURE, ZONE 3 TEMP, ZONE 4 MOISTURE, AMBIENT LIGHT, AMBIENT TEMP, CPU TEMP, MESSAGE\n"
         self.logger_ID = 'Gargen Pi Logger'
         self.log_file = log_file_name
         self.log_level = logging.INFO
         self._configure_cvs_logger()
-
 
     def _configure_cvs_logger(self):
         """
@@ -34,66 +33,68 @@ class CvsLogger(object):
         self.csv_logger_fh.setFormatter(self.csv_logger_formatter)
         self.csv_logger.addHandler(self.csv_logger_fh)
 
-
-    def log_csv(self, timestamp=None, v1_05=None, v1_5=None, v1_8=None, v3_3=None, v5_0=None, curr=None, vid=None, spg=None, trans_t=None, heat_sink_t=None, messg=" "):
+    def log_csv(self, timestamp=None, zone_1_moisture=None,
+                zone_1_temp=None, zone_2_moisture=None,
+                zone_2_temp=None, zone_3_moisture=None,
+                zone_3_temp=None, zone_4_moisture=None,
+                zone_4_temp=None, ambient_light=None,
+                ambient_temp=None, cpu_temp=None, messg=" "):
         """
-        Log a message to the CSV log file
+        Log values to a CSV file
 
-        TIMESTAMP, PASS, VOLT, FREQ,  1_05V, 1_5V, 1_8V, 3_3V, 5_0V, CURR, VID, SPG, RENCO_TRANS, HEAT_SINK, MESSG\n
-
-        :param timestamp:
-        :param v1_05:
-        :param v1_5:
-        :param v1_8:
-        :param v3_3:
-        :param v5_0:
-        :param curr:
-        :param vid:
-        :param spg:
-        :param trans_t:
-        :param heat_sink_t:
+        :param timestamp: Timestamp
+        :type timestamp: float
+        :param zone_1_moisture:
+        :type zone_1_moisture: float
+        :param zone_1_temp:
+        :type zone_1_temp: float
+        :param zone_2_moisture:
+        :type zone_2_moisture: float
+        :param zone_2_temp:
+        :type zone_2_temp: float
+        :param zone_3_moisture:
+        :type zone_3_moisture: float
+        :param zone_3_temp:
+        :type zone_3_temp: float
+        :param zone_4_moisture:
+        :type zone_4_moisture: float
+        :param zone_4_temp:
+        :type zone_4_temp: float
+        :param ambient_light:
+        :type ambient_light: float
+        :param ambient_temp:
+        :type ambient_temp: float
+        :param cpu_temp:
+        :type cpu_temp: float
         :param messg:
-        :return:
+        :type messg: str
         """
-        fmt = '{0:.5f}'
+
         if timestamp is None:
             timestamp = ts()
-        v1_05 = format_float(v1_05)
-        v1_5 = format_float(v1_5)
-        v1_8 = format_float(v1_8)
-        v3_3 = format_float(v3_3)
-        v5_0 = format_float(v5_0)
-        curr = format_float(curr)
-        vid = format_float(vid)
-        spg = format_float(spg)
-        trans_t = format_float(trans_t)
-        heat_sink_t = self.format_float(heat_sink_t)
-        log_msg = '%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s' % \
+        z1_m = format_float(zone_1_moisture)
+        z1_t = format_float(zone_1_temp)
+        z2_m = format_float(zone_2_moisture)
+        z2_t = format_float(zone_2_temp)
+        z3_m = format_float(zone_3_moisture)
+        z3_t = format_float(zone_3_temp)
+        z4_m = format_float(zone_4_moisture)
+        z4_t = format_float(zone_4_temp)
+        a_t = format_float(ambient_temp)
+        a_l = format_float(ambient_light)
+        c_t = format_float(cpu_temp)
+        log_msg = '%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s %s' % \
                   (timestamp,
-                   self.current_iter,
-                   self.current_voltage,
-                   self.current_freq,
-                   v1_05,
-                   v1_5,
-                   v1_8,
-                   v3_3,
-                   v5_0,
-                   curr,
-                   vid,
-                   spg,
-                   trans_t,
-                   heat_sink_t,
+                   z1_m,
+                   z1_t,
+                   z2_m,
+                   z2_t,
+                   z3_m,
+                   z3_t,
+                   z4_m,
+                   z4_t,
+                   a_t,
+                   a_l,
+                   c_t,
                    messg)
         self.csv_logger.info(log_msg)
-
-
-        def log_temps(self):
-        """
-        Log temperatures
-
-        Add as a scheduled job using apscheduler
-        """
-        renco_transformer = self.temp_sensors['renco_transformer'].get_c()
-        heatsink_near_reg = self.temp_sensors['heatsink_near_reg'].get_c()
-        self.log_csv(trans_t=renco_transformer,
-                     heat_sink_t=heatsink_near_reg)
