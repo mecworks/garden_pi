@@ -25,6 +25,7 @@ get_temp(){
 }
 
 log_data() {
+    timestamp=$(ts)
     zone_1m=$($SENSOR_CMD -g 22)
     zone_2m=$($SENSOR_CMD -g 23)
     zone_3m=$($SENSOR_CMD -g 24)
@@ -36,7 +37,7 @@ log_data() {
     light=$($SENSOR_CMD -g 21)
     cpu_temp_c=$(vcgencmd measure_temp | sed -e 's/temp=\(.*\).C/\1/')
     cpu_temp_f=$(echo "scale=2;((9/5) * $cpu_temp_c) + 32" |bc)
-    echo "$(ts), $zone_1m, $zone_1t, $zone_2m, $zone_2t, $zone_3m, $zone_3t, $zone_4m, $light, $ambient_t, $cpu_temp_f" >> $LOG_FILE
+    echo "$timestamp, $zone_1m, $zone_1t, $zone_2m, $zone_2t, $zone_3m, $zone_3t, $zone_4m, $light, $ambient_t, $cpu_temp_f" >> $LOG_FILE
 }
 
 log_data
