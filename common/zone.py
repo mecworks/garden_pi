@@ -10,14 +10,20 @@ class Zone (object):
 
     def __init__(self, alias=None, moisture_sensor_gpio=None, relay_gpio=None, moisture_water_threshold=None, watering_duration=None, min_seconds_between_waterings=18000, temp_sensor_id=None):
         self.alias = alias
-        self._moisture_sensor_gpio = moisture_sensor_gpio
-        self.moisture_sensor = RcSensor(self._moisture_sensor_gpio)
+        if moisture_sensor_gpio in [None, 'None']:
+            self.moisture_sensor = None
+        else:
+            self._moisture_sensor_gpio = moisture_sensor_gpio
+            self.moisture_sensor = RcSensor(self._moisture_sensor_gpio)
         self._relay_gpio = relay_gpio
         self.moisture_water_threshold = moisture_water_threshold
         self.watering_duration = watering_duration
         self.min_seconds_between_waterings = min_seconds_between_waterings
-        self._temp_sensor_id = temp_sensor_id
-        self.temp_sensor = TempSensor(self._temp_sensor_id)
+        if temp_sensor_id in [None, 'None']:
+            self.temp_sensor = None
+        else:
+            self._temp_sensor_id = temp_sensor_id
+            self.temp_sensor = TempSensor(self._temp_sensor_id)
         self.relay = Relay(self._relay_gpio)
         self.last_water_time = None
 
@@ -41,9 +47,14 @@ class Zone (object):
 
     @property
     def temp(self):
-        assert isinstance(self.temp_sensor, TempSensor)
-        return self.temp_sensor.get_f()
+        if self.temp_sensor is None:
+            return None
+        else:
+            return self.temp_sensor.get_f()
 
     @property
     def moisture(self):
-        return self.moisture_sensor.rc_count()
+        if self.moisture_sensor is None:
+            return None
+        else:
+            return self.moisture_sensor.rc_count()
