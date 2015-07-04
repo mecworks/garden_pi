@@ -24,7 +24,7 @@ moisture_water_threshold = 13299
 moisture_after_water = 23866
 relay_gpio = 15
 temp_sensor_id = 28-000005f7fe06
-watering_duration = 120
+watering_duration = 125
 min_seconds_between_waterings = 18000
 
 [Zone 3]
