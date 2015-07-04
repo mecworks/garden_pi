@@ -9,9 +9,7 @@ from common.temp_sensor import TempSensor
 from common.rc_sensor import RcSensor
 import common.csv_logger as cvs_logger
 import ConfigParser
-import ast
 from apscheduler.schedulers.background import BackgroundScheduler
-from common.utils import format_float
 import sys
 import signal
 import time
@@ -33,6 +31,8 @@ c_temp = CpuTemp()
 logging.basicConfig()
 log_file = conf_parser.get('Main', 'logfile')
 garden_pi_logger = cvs_logger.CvsLogger('./data/garden_pi.csv')
+logger_ID = 'Gargen Pi Logger'
+csv_logger = logging.getLogger(logger_ID)
 
 # Initialize zones
 zone_names = ['Zone 1', 'Zone 2', 'Zone 3', 'Zone 4']
@@ -103,12 +103,12 @@ def signal_handler(signal, frame):
 print('Starting Garden Pi')
 signal.signal(signal.SIGINT, signal_handler)
 scheduler = BackgroundScheduler()
-#scheduler.add_job(log_voltages, trigger='interval', seconds=1, name='Voltage Logger', id='voltage_logger', max_instances=1)
-scheduler.add_job(log_measurements, trigger='interval', seconds=20, name='Data Logger', id='data_logger', max_instances=1)
-#scheduler.add_job(log_current, name='Log Current', id='log_current')
+scheduler.add_job(log_measurements, trigger='interval', seconds=30, name='Data Logger', id='data_logger', max_instances=1)
 scheduler.start()
 
 while True:
     time.sleep(1)
 
 
+log_measurements()
+cleanup()
