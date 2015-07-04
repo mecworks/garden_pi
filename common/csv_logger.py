@@ -14,8 +14,9 @@ class CvsLogger(object):
         pass
         self.header = "TIMESTAMP, ZONE 1 MOISTURE, ZONE 1 TEMP, ZONE 2 MOISTURE, ZONE 2 TEMP, ZONE 3 MOISTURE, ZONE 3 TEMP, ZONE 4 MOISTURE, AMBIENT LIGHT, AMBIENT TEMP, CPU TEMP, MESSAGE\n"
         self.logger_ID = 'Gargen Pi Logger'
+        self.csv_logger = None
         self.log_file = log_file_name
-        self.log_level = logging.INFO
+        self.log_level = logging.DEBUG
         self._configure_cvs_logger()
 
     def _configure_cvs_logger(self):
@@ -28,10 +29,10 @@ class CvsLogger(object):
                 f.write(self.header)
         self.csv_logger = logging.getLogger(self.logger_ID)
         self.csv_logger_fh = logging.FileHandler(self.log_file)
-        self.csv_logger_fh.setLevel(self.log_level)
         self.csv_logger_formatter = logging.Formatter('%(message)s')
         self.csv_logger_fh.setFormatter(self.csv_logger_formatter)
         self.csv_logger.addHandler(self.csv_logger_fh)
+        self.csv_logger.setLevel(self.log_level)
 
     def log_csv(self, timestamp=None, zone_1_moisture=None,
                 zone_1_temp=None, zone_2_moisture=None,
@@ -80,8 +81,8 @@ class CvsLogger(object):
         z3_t = format_float(zone_3_temp)
         z4_m = format_float(zone_4_moisture)
         z4_t = format_float(zone_4_temp)
-        a_t = format_float(ambient_temp)
         a_l = format_float(ambient_light)
+        a_t = format_float(ambient_temp)
         c_t = format_float(cpu_temp)
         log_msg = '%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s %s' % \
                   (timestamp,
@@ -93,8 +94,15 @@ class CvsLogger(object):
                    z3_t,
                    z4_m,
                    z4_t,
-                   a_t,
                    a_l,
+                   a_t,
                    c_t,
                    messg)
         self.csv_logger.info(log_msg)
+
+
+if __name__ == '__main__':
+    logfile_name = './test.csv'
+    my_logger = CvsLogger(logfile_name)
+    my_logger.log_csv(messg='Test')
+
