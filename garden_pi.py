@@ -143,6 +143,7 @@ def log_measurements(measurement_d):
                              cpu_temp=measurement_d['cpu_temp'])
 
 def water_zone(zone_name):
+    # TODO: handle boolean return from garden_pi_zones[zone_name].water()
     s = time.time()
     garden_pi_logger.log_csv(messg='START WATERING: %s' % zone_name.upper())
     garden_pi_zones[zone_name].water()
