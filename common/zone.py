@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
 from common.relay import Relay
-from common.temp_sensor import TempSensor
 from common.rc_sensor import RcSensor
 from common.temp_sensor import TempSensor
 import ConfigParser
 import time
 import os
+import cPickle as Pickle
 
 # Config file
 path = os.path.dirname(__file__)
@@ -14,6 +14,7 @@ config_file = os.path.join(path, '../garden_pi.cfg')
 conf_parser = ConfigParser.ConfigParser()
 conf_parser.read(config_file)
 DEBUG = conf_parser.getboolean('main', 'debug')
+
 
 class Zone (object):
 
@@ -35,7 +36,18 @@ class Zone (object):
         else:
             self._temp_sensor_id = temp_sensor_id
             self.temp_sensor = TempSensor(self._temp_sensor_id)
-        self.last_water_time = None
+        self.state = dict('')
+        self.state['last_water_time'] = None
+        self.state_file_name = os.path.join(path, '../.%s.pkl' % self.name)
+        try:
+            sf = open(self.state_file_name, 'r+')
+        except IOError:
+            sf = open(self.state_file_name, 'w+')
+        try:
+            self.state = Pickle.load(sf)
+        except EOFError:
+            self.state['last_water_time'] = None
+            Pickle.dump(self.state, sf)
 
     def water(self):
         """
@@ -45,24 +57,33 @@ class Zone (object):
         :return: bool
         """
         now = time.time()
-        if self.last_water_time is None:
-            self.last_water_time = now
-        if (now == self.last_water_time) or (now - self.last_water_time > self.min_seconds_between_waterings):
-            self.last_water_time = now
+        if self.state['last_water_time'] is None:
+            self.state['last_water_time'] = now
+        if (now == self.state['last_water_time']) or (now - self.state['last_water_time'] > self.min_seconds_between_waterings):
             if DEBUG:
                 print("Debug mode, not turning on relay")
             else:
+                self.state['last_water_time'] = now
+                with open(self.state_file_name, 'r+') as sf:
+                    Pickle.dump(self.state, sf)
                 self.relay.set_state(self.relay.ON)
             time.sleep(self.watering_duration)
             self.relay.set_state(self.relay.OFF)
             return True
         else:
-            print('Not enought time has elapsed since last watering. Not starting watering cycle.')
+            with open(self.state_file_name, 'r+') as sf:
+                Pickle.dump(self.state, sf)
+            print('Not enough time has elapsed since last watering (min: %ss). Not starting watering cycle.' % self.min_seconds_between_waterings)
             return False
 
     def water_now(self):
-        self.last_water_time = time.time()
-        self.relay.set_state(self.relay.ON)
+        if DEBUG:
+            print("Debug mode, not turning on relay")
+        else:
+            self.state['last_water_time'] = time.time()
+            with open(self.state_file_name, 'r+') as sf:
+                Pickle.dump(self.state, sf)
+            self.relay.set_state(self.relay.ON)
         time.sleep(self.watering_duration)
         self.relay.set_state(self.relay.OFF)
 
