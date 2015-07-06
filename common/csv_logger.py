@@ -84,7 +84,7 @@ class CvsLogger(object):
         a_l = format_float(ambient_light)
         a_t = format_float(ambient_temp)
         c_t = format_float(cpu_temp)
-        log_msg = '%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s %s' % \
+        log_msg = '%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s' % \
                   (timestamp,
                    z1_m,
                    z1_t,
