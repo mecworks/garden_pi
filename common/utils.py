@@ -20,6 +20,42 @@ def format_float(f):
         return fmt.format(f)
 
 
+def run_as_thread(func):
+    """
+        run_as_thread(func)
+            function decorator, intended to make "func" run in a separate
+            thread (asynchronously).
+            Returns the created Thread object
+
+            E.g.:
+            @run_as_thread
+            def task1():
+                do_something
+
+            @run_as_thread
+            def task2():
+                do_something_too
+
+            t1 = task1()
+            t2 = task2()
+            ...
+            t1.join()
+            t2.join()
+
+            # http://code.activestate.com/recipes/576684-simple-threading-decorator/
+    """
+    from threading import Thread
+    from functools import wraps
+
+    @wraps(func)
+    def async_func(*args, **kwargs):
+        func_hl = Thread(target = func, args = args, kwargs = kwargs)
+        func_hl.start()
+        return func_hl
+
+    return async_func
+
+
 def progress_bar(progress_bar_time=1, end_val=100, bar_size=20):
     for i in xrange(0, end_val+1):
         percent = float(i) / end_val
