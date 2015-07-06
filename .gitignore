@@ -61,3 +61,8 @@ target/
 
 # Data files
 SensorData.txt
+.zone_*
+*.cfg
+*.out
+cron_output.txt
+rcsensor_cli
