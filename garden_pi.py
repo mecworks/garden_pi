@@ -56,7 +56,7 @@ for zone_name in zone_names:
                                   relay_gpio=relay_gpio,
                                   moisture_water_threshold=moisture_water_threshold,
                                   watering_duration=watering_duration,
-                                  min_seconds_between_waterings=18000,
+                                  min_seconds_between_waterings=min_seconds_between_waterings,
                                   temp_sensor_id=temp_sensor_id)
 
 
