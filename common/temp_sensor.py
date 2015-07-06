@@ -41,6 +41,15 @@ class TempSensor(object):
         """
         return self._read_temp()[1]
 
+    @property
+    def temp_f(self):
+        """
+        Fahrenheit temp property
+
+        :return:
+        """
+        return self._read_temp()[1]
+
     def get_c(self):
         """
         Get temperature in Celsius
@@ -49,6 +58,13 @@ class TempSensor(object):
         """
         return self._read_temp()[0]
 
+    @property
+    def temp_c(self):
+        """
+        Celsius temp property
+        :return:
+        """
+        return self._read_temp()[0]
 
 if __name__ == '__main__':
     import subprocess
