@@ -6,7 +6,7 @@ GPIO.setwarnings(False)
 from common.zone import Zone
 from common.cpu_temp import CpuTemp
 from common.temp_sensor import TempSensor
-from common.rc_sensor import RcSensor
+from common.rc_sensor_cli import RcSensor
 from common.utils import run_as_thread
 from common.utils import format_float
 import common.csv_logger as cvs_logger
@@ -176,11 +176,13 @@ scheduler = BackgroundScheduler()
 measurement_data = MeasurementData()
 scheduler.add_job(log_measurements, args=[measurement_data], trigger='interval', minutes=1, name='Data Logger', id='data_logger', max_instances=1, misfire_grace_time=20)
 for zone_name in garden_pi_zones.keys():
-    #scheduler.add_job(water_zone, trigger='cron', hour='7,18', minute=15, name=zone, max_instances=1, misfire_grace_time=20)
-    scheduler.add_job(water_zone, trigger='cron', args=[zone_name], name=zone_name, minute='*/5', max_instances=1, misfire_grace_time=20)
+    scheduler.add_job(water_zone, trigger='cron', hour='7,18', minute=15, args=[zone_name], name=zone_name, max_instances=1, misfire_grace_time=20)
+    #scheduler.add_job(water_zone, trigger='cron', args=[zone_name], name=zone_name, minute='*/5', max_instances=1, misfire_grace_time=20)
 scheduler.start()
 for job in scheduler.get_jobs():
     print("Job: %s, Func: %s, Next run time: %s" % (job.name, job.func_ref, job.next_run_time))
+    sys.stdout.flush()
+
 while True:
     time.sleep(1)
 
