@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from common.relay import Relay
-from common.rc_sensor import RcSensor
+from common.rc_sensor_cli import RcSensor
 from common.temp_sensor import TempSensor
 import ConfigParser
 import time
