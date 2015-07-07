@@ -17,6 +17,9 @@ DEBUG = conf_parser.getboolean('main', 'debug')
 
 
 class Zone (object):
+    """
+    A Zone handles all the attributes and functions of a zone, sensing, watering, timings, etc.
+    """
 
     def __init__(self, name=None, alias=None, moisture_sensor_gpio=None, relay_gpio=None, moisture_water_threshold=None, watering_duration=None, min_seconds_between_waterings=18000, temp_sensor_id=None):
         self.name = name
@@ -77,6 +80,11 @@ class Zone (object):
             return False
 
     def water_now(self):
+        """
+        Force a watering cycle regardless of last_water_time
+
+        :return:
+        """
         if DEBUG:
             print("Debug mode, not turning on relay")
         else:
@@ -89,6 +97,10 @@ class Zone (object):
 
     @property
     def temp(self):
+        """
+        Returns the temperature in Fahrenheit
+        :return:
+        """
         if self.temp_sensor is None:
             return None
         else:
@@ -96,6 +108,10 @@ class Zone (object):
 
     @property
     def moisture(self):
+        """
+        Returns the RC sensor count for the moisture sensor
+        :return:
+        """
         if self.moisture_sensor is None:
             return None
         else:
