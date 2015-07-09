@@ -2,6 +2,7 @@
 
 import time
 import sys
+import datetime
 
 def timestamp():
     """
@@ -9,11 +10,19 @@ def timestamp():
 
     :return: str
     """
-    return '{0:.4f}'.format(time.time())
+    return float('{0:.4f}'.format(time.time()))
 
+def date_from_timestamp(ts):
+    """
+    Take a unix timestamp and return the date formatted string
+    :param ts: unix timestamp (float or int)
+    :return: str
+    """
+    return datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
 
-def format_float(f):
-    fmt = '{0:.3f}'
+def format_float(f, precision=3):
+    assert isinstance(precision, int)
+    fmt = '{0:.%sf}' % precision
     if f is None:
         return " "
     else:
