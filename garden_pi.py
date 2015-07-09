@@ -31,6 +31,9 @@ ambient_temp_sensor = TempSensor(ambient_temp_sensor_id)
 ambient_light_sensor_gpio = conf_parser.getint('main', 'ambient_light_sensor_gpio')
 ambient_light_sensor = RcSensor(gpio=ambient_light_sensor_gpio)
 c_temp = CpuTemp()
+temp_scale = conf_parser.get('main', 'temp_scale')
+if temp_scale.lower() not in ['f', 'fahrenheit', 'c', 'celsius']:
+    raise ValueError("temp_scale value must be one of 'f', 'fahrenheit', 'c' or 'celsius' (case insensitive)")
 
 # Log file
 logging.basicConfig()
@@ -57,7 +60,8 @@ for zone_name in zone_names:
                                   moisture_water_threshold=moisture_water_threshold,
                                   watering_duration=watering_duration,
                                   min_seconds_between_waterings=min_seconds_between_waterings,
-                                  temp_sensor_id=temp_sensor_id)
+                                  temp_sensor_id=temp_sensor_id,
+                                  temp_scale=temp_scale)
 
 
 class MeasurementData(object):
@@ -106,11 +110,20 @@ class MeasurementData(object):
 
     @run_as_thread
     def get_ambient_temp(self):
-        self._measurements['ambient_temp'] = ambient_temp_sensor.temp_f
+        global temp_scale
+        if temp_scale.lower() == 'f':
+            self._measurements['ambient_temp'] = ambient_temp_sensor.temp_f
+        elif temp_scale.lower() == 'c':
+            self._measurements['ambient_temp'] = ambient_temp_sensor.temp_c
 
     @run_as_thread
     def get_cpu_temp(self):
-        self._measurements['cpu_temp'] = c_temp.cpu_temp_f
+        global temp_scale
+        if temp_scale.lower() in ['f', 'fahrenheit']:
+            self._measurements['cpu_temp'] = c_temp.cpu_temp_f
+        elif temp_scale.lower() in ['c', 'celsius']:
+            self._measurements['cpu_temp'] = c_temp.cpu_temp_c
+
 
 
 def log_measurements(measurement_d):
@@ -174,7 +187,7 @@ print('Starting Garden Pi')
 signal.signal(signal.SIGINT, signal_handler)
 scheduler = BackgroundScheduler()
 measurement_data = MeasurementData()
-scheduler.add_job(log_measurements, args=[measurement_data], trigger='interval', minutes=5, name='Data Logger', id='data_logger', max_instances=1, misfire_grace_time=20)
+scheduler.add_job(log_measurements, args=[measurement_data], trigger='cron', minute='*/5', name='Data Logger', id='data_logger', max_instances=1, misfire_grace_time=20)
 for zone_name in garden_pi_zones.keys():
     scheduler.add_job(water_zone, trigger='cron', hour='7,18', minute=15, args=[zone_name], name=zone_name, max_instances=1, misfire_grace_time=20)
 scheduler.start()
