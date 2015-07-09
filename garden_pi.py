@@ -16,7 +16,6 @@ import sys
 import signal
 import time
 import logging
-import threading
 from threading import Thread
 
 # Config file
@@ -54,14 +53,14 @@ for zone_name in zone_names:
     temp_sensor_id = conf_parser.get(zone_name, 'temp_sensor_id')
     min_seconds_between_waterings = conf_parser.getint(zone_name, 'min_seconds_between_waterings')
     garden_pi_zones[zone_name] = Zone(name=zone_name,
-                                  alias=alias,
-                                  moisture_sensor_gpio=moisture_sensor_gpio,
-                                  relay_gpio=relay_gpio,
-                                  moisture_water_threshold=moisture_water_threshold,
-                                  watering_duration=watering_duration,
-                                  min_seconds_between_waterings=min_seconds_between_waterings,
-                                  temp_sensor_id=temp_sensor_id,
-                                  temp_scale=temp_scale)
+                                      alias=alias,
+                                      moisture_sensor_gpio=moisture_sensor_gpio,
+                                      relay_gpio=relay_gpio,
+                                      moisture_water_threshold=moisture_water_threshold,
+                                      watering_duration=watering_duration,
+                                      min_seconds_between_waterings=min_seconds_between_waterings,
+                                      temp_sensor_id=temp_sensor_id,
+                                      temp_scale=temp_scale)
 
 
 class MeasurementData(object):
@@ -125,7 +124,6 @@ class MeasurementData(object):
             self._measurements['cpu_temp'] = c_temp.cpu_temp_c
 
 
-
 def log_measurements(measurement_d):
     assert isinstance(measurement_data, MeasurementData)
     measurement_d.reset()
@@ -155,6 +153,7 @@ def log_measurements(measurement_d):
                              ambient_temp=measurement_d['ambient_temp'],
                              cpu_temp=measurement_d['cpu_temp'])
 
+
 def water_zone(zone_name):
     # TODO: handle boolean return from garden_pi_zones[zone_name].water()
     s = time.time()
@@ -162,6 +161,7 @@ def water_zone(zone_name):
     garden_pi_zones[zone_name].water()
     f = time.time()
     garden_pi_logger.log_csv(messg='END WATERING: %s. Elapsed Time: %ss' % (zone_name.upper(), format_float(f-s)))
+
 
 def cleanup(force_exit=False):
     scheduler.shutdown(wait=False)
