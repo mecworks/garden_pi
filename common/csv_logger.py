@@ -6,13 +6,14 @@ import logging
 import logging.handlers
 from common.utils import format_float
 from common.utils import timestamp as ts
+from common.utils import date_from_timestamp
 import os
 
 class CvsLogger(object):
 
     def __init__(self, log_file_name):
         pass
-        self.header = "TIMESTAMP, ZONE 1 MOISTURE, ZONE 1 TEMP, ZONE 2 MOISTURE, ZONE 2 TEMP, ZONE 3 MOISTURE, ZONE 3 TEMP, ZONE 4 MOISTURE, AMBIENT LIGHT, AMBIENT TEMP, CPU TEMP, MESSAGE\n"
+        self.header = "TIMESTAMP, TIMESTAMP (HR), ZONE 1 MOISTURE, ZONE 1 TEMP, ZONE 2 MOISTURE, ZONE 2 TEMP, ZONE 3 MOISTURE, ZONE 3 TEMP, ZONE 4 MOISTURE, ZONE 4 TEMP, AMBIENT LIGHT, AMBIENT TEMP, CPU TEMP, MESSAGE\n"
         self.logger_ID = 'Gargen Pi Logger'
         self.csv_logger = None
         self.log_file = log_file_name
@@ -72,7 +73,8 @@ class CvsLogger(object):
         """
 
         if timestamp is None:
-            timestamp = ts()
+            timestamp = format_float(ts(), precision=4)
+        timestamp_hr = date_from_timestamp(float(timestamp))
         z1_m = format_float(zone_1_moisture)
         z1_t = format_float(zone_1_temp)
         z2_m = format_float(zone_2_moisture)
@@ -84,8 +86,9 @@ class CvsLogger(object):
         a_l = format_float(ambient_light)
         a_t = format_float(ambient_temp)
         c_t = format_float(cpu_temp)
-        log_msg = '%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s' % \
+        log_msg = '%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s' % \
                   (timestamp,
+                   timestamp_hr,
                    z1_m,
                    z1_t,
                    z2_m,
