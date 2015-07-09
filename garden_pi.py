@@ -174,10 +174,9 @@ print('Starting Garden Pi')
 signal.signal(signal.SIGINT, signal_handler)
 scheduler = BackgroundScheduler()
 measurement_data = MeasurementData()
-scheduler.add_job(log_measurements, args=[measurement_data], trigger='interval', minutes=1, name='Data Logger', id='data_logger', max_instances=1, misfire_grace_time=20)
+scheduler.add_job(log_measurements, args=[measurement_data], trigger='interval', minutes=5, name='Data Logger', id='data_logger', max_instances=1, misfire_grace_time=20)
 for zone_name in garden_pi_zones.keys():
     scheduler.add_job(water_zone, trigger='cron', hour='7,18', minute=15, args=[zone_name], name=zone_name, max_instances=1, misfire_grace_time=20)
-    #scheduler.add_job(water_zone, trigger='cron', args=[zone_name], name=zone_name, minute='*/5', max_instances=1, misfire_grace_time=20)
 scheduler.start()
 for job in scheduler.get_jobs():
     print("Job: %s, Func: %s, Next run time: %s" % (job.name, job.func_ref, job.next_run_time))
