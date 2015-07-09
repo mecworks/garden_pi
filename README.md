@@ -11,3 +11,7 @@ The design is very simple, targeting small container gardening. Planed support f
 * CSV logging of data
 * Charting of data using Flask/matplotlib/pandas
 * Keep infrastucture simple
+
+Video of a zone being watered is here: https://www.youtube.com/watch?v=Rl8ZuR8gYi8
+
+
