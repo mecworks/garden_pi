@@ -21,7 +21,7 @@ class Zone (object):
     A Zone handles all the attributes and functions of a zone, sensing, watering, timings, etc.
     """
 
-    def __init__(self, name=None, alias=None, moisture_sensor_gpio=None, relay_gpio=None, moisture_water_threshold=None, watering_duration=None, min_seconds_between_waterings=18000, temp_sensor_id=None):
+    def __init__(self, name=None, alias=None, moisture_sensor_gpio=None, relay_gpio=None, moisture_water_threshold=None, watering_duration=None, min_seconds_between_waterings=18000, temp_sensor_id=None, temp_scale='f'):
         self.name = name
         self.alias = alias
         if moisture_sensor_gpio in [None, 'None']:
@@ -39,6 +39,7 @@ class Zone (object):
         else:
             self._temp_sensor_id = temp_sensor_id
             self.temp_sensor = TempSensor(self._temp_sensor_id)
+        self.temp_scale = temp_scale
         self.state = dict('')
         self.state['last_water_time'] = None
         self.state_file_name = os.path.join(path, '../.%s.pkl' % self.name)
@@ -104,7 +105,10 @@ class Zone (object):
         if self.temp_sensor is None:
             return None
         else:
-            return self.temp_sensor.temp_f
+            if self.temp_scale.lower() in ['f', 'fahrenheit']:
+                return self.temp_sensor.temp_f
+            elif self.temp_scale.lower()  in ['c', 'celsius']:
+                return self.temp_sensor.temp_c
 
     @property
     def moisture(self):
