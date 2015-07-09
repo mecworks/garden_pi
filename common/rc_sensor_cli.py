@@ -24,7 +24,7 @@ class RcSensor(object):
 
         :return: int
         """
-        m = self.rcsense_re.match(pexpect.run(self.rcsensor_cmd, timeout=150))
+        m = self.rcsense_re.match(pexpect.run(self.rcsensor_cmd, timeout=180))
         count = int(m.groups()[0])
         return count
 
