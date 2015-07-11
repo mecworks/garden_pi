@@ -110,9 +110,9 @@ class MeasurementData(object):
     @run_as_thread
     def get_ambient_temp(self):
         global temp_scale
-        if temp_scale.lower() == 'f':
+        if temp_scale.lower() in ['f', 'fahrenheit']:
             self._measurements['ambient_temp'] = ambient_temp_sensor.temp_f
-        elif temp_scale.lower() == 'c':
+        elif temp_scale.lower() in ['c', 'celsius']:
             self._measurements['ambient_temp'] = ambient_temp_sensor.temp_c
 
     @run_as_thread
