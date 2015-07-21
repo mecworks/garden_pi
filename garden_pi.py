@@ -37,7 +37,7 @@ if temp_scale.lower() not in ['f', 'fahrenheit', 'c', 'celsius']:
 # Log file
 logging.basicConfig()
 log_file = conf_parser.get('main', 'logfile')
-garden_pi_logger = cvs_logger.CvsLogger('./data/garden_pi.csv')
+garden_pi_logger = cvs_logger.CvsLogger(log_file)
 logger_ID = 'Gargen Pi Logger'
 csv_logger = logging.getLogger(logger_ID)
 

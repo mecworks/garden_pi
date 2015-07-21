@@ -2,7 +2,7 @@
 ambient_temp_sensor = 28-000005f8d181
 ambient_light_sensor_gpio = 21
 temp_scale = Fahrenheit
-logfile = ./garden_pi.csv
+logfile = ./data/garden_pi.csv
 debug = False
 
 [zone_1]
