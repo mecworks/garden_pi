@@ -14,5 +14,5 @@ clean:
 	rm rcsensor_cli rcsensor.so rcsensor.o rc_count.o || true
 
 install:
-	cp -v rcsensor.so ../rcsensor/
+	cp -v rcsensor.so ../common/rcsensor/
 	cp -v rcsensor_cli ../utils/

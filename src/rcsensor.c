@@ -2,8 +2,9 @@
 Calculate R/C charge time of capacitive sensors on Raspberry Pi GPIOs
 Python module
  */
-#include <getopt.h>
 #include <Python.h>
+#include <getopt.h>
+#include <wiringPi.h>
 #include "rc_count.h"
 #define DEFAULT_DISCHARGE_DELAY 10
 #define DEFAULT_TIMEOUT 1000
@@ -45,4 +46,5 @@ static PyMethodDef rcsensor_funcs[] = {
 void initrcsensor(void)
 {
     Py_InitModule("rcsensor", rcsensor_funcs);
+    wiringPiSetupGpio();
 }

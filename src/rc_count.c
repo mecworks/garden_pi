@@ -8,8 +8,6 @@
 int get_count(int gpio, int cycles, int discharge_delay) {
     unsigned int c,x,re[cycles],med=0;
 
-    if (wiringPiSetupGpio()<0)
-        exit (1) ;
     pullUpDnControl (gpio, PUD_OFF);
     for (x=0;x<cycles;x++) {
         c=0;

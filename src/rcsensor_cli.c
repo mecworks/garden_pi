@@ -7,6 +7,7 @@ Calculate R/C charge time of capacitive sensors on Raspberry Pi GPIOs
 #include <errno.h>
 #include <stdlib.h>
 #include <getopt.h>
+#include <wiringPi.h>
 #include "rc_count.h"
 #define DEFAULT_DISCHARGE_DELAY 10
 #define DEFAULT_CYCLES 10
@@ -58,6 +59,7 @@ int main(int argc, char *argv[]) {
         cycles = DEFAULT_CYCLES;
     unsigned int re[cycles];
 
+    wiringPiSetupGpio();
     val = get_count(gpio, cycles, discharge_delay);
     printf("%d\n",val);
     return 0;
