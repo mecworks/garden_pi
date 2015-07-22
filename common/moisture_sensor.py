@@ -90,11 +90,11 @@ class VH400MoistureSensor(object):
         :return: float
         """
         v = self.read_raw_voltage()
-        if 0 < v < 1.1:
+        if 0.0 <= v <= 1.1:
             return 10 * v -1
-        elif 1.1 < v < 1.3:
+        elif 1.1 < v <= 1.3:
             return 25 * v - 17.5
-        elif 1.3 < v <1.82:
+        elif 1.3 < v <= 1.82:
             return 48.08 * v - 47.5
         elif 1.82 < v:
             return 26.32* v - 7.89
