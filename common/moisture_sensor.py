@@ -3,6 +3,7 @@
 from common.adafruit.Adafruit_ADS1x15 import Adafruit_ADS1x15
 # from threading import RLock    #  May be needed if we end up multiplexing readings with a 16:1 analog mux
 
+
 class VH400MoistureSensor(object):
     """
     This class supports the Vegetronix VH400 MoistureSensor
@@ -10,7 +11,7 @@ class VH400MoistureSensor(object):
 
     ADS1115 = 0x01
 
-    def __init__(self, i2c_addr=49, ADS1x15_pin=None, ADS1x15_gain=4096, ADS1x15_sps=256, average_readings=1):
+    def __init__(self, i2c_addr=0x49, pin=None, gain=4096, sps=256, readings_to_average=1):
         """
         A Vegetronix VH400 MoistureSensor.
 
@@ -42,23 +43,24 @@ class VH400MoistureSensor(object):
 
         :param i2c_addr: i2c address of the ADS1115 chip
         :type i2c_addr: hex
-        :param ADS1x15_pin: Which ADC do we read when talking to this sensor?
-        :type ADS1x15_pin: int
-        :param ADS1x15_gain: Input gain.  This shouldn't be changed from 4096 as the VH400 has a 0-3v output
-        :type ADS1x15_gain: int
-        :param ADS1x15_sps: How many samples per second will the ADC take?  Lower = less noise, Higher = faster readings.
-        :type ADS1x15_sps: int
-        :param average_readings: How many readings to we average before returning a value
-        :type average_readings: int
+        :param pin: Which ADC do we read when talking to this sensor?
+        :type pin: int
+        :param gain: Input gain.  This shouldn't be changed from 4096 as the VH400 has a 0-3v output
+        :type gain: int
+        :param sps: How many samples per second will the ADC take?  Lower = less noise, Higher = faster readings.
+        :type sps: int
+        :param readings_to_average: How many readings to we average before returning a value
+        :type readings_to_average: int
         """
-        self.i2c_addr = i2c_addr
-        self.pin = ADS1x15_pin
-        self.gain = ADS1x15_gain
-        self.sps = ADS1x15_sps
-        self.adc = Adafruit_ADS1x15.ADS1x15(address=self.i2c_addr, ic=self.ADS1115)
-        self.average_readings = average_readings
+        self._i2c_addr = i2c_addr
+        self._pin = pin
+        self._gain = gain
+        self._sps = sps
+        self._adc = Adafruit_ADS1x15.ADS1x15(address=self._i2c_addr, ic=self.ADS1115)
+        self.readings_to_average = readings_to_average
 
-    def read_percent(self):
+    @property
+    def percent(self):
         """
         Return the Volumetric Water Content (VWC) % of the soil
 
@@ -91,24 +93,36 @@ class VH400MoistureSensor(object):
 
         :return: float
         """
-        v = self.read_raw_voltage()
+        v = self.raw_voltage
+        res = 0
         if 0.0 <= v <= 1.1:
-            return 10 * v -1
+            res = 10 * v - 1
         elif 1.1 < v <= 1.3:
-            return 25 * v - 17.5
+            res = 25 * v - 17.5
         elif 1.3 < v <= 1.82:
-            return 48.08 * v - 47.5
+            res = 48.08 * v - 47.5
         elif 1.82 < v:
-            return 26.32* v - 7.89
+            res = 26.32 * v - 7.89
+        if res < 0:
+            return 0
+        else:
+            return res * 1.476
 
-    def read_raw_voltage(self):
+    @property
+    def raw_voltage(self):
         """
         Return the raw sensor voltage.  Average readings before returning the value
 
         :return: float
         """
         reading = 0.0
-        for _i in range(self.average_readings):
-            reading += self.adc.readADCSingleEnded(self.pin, self.gain, self.sps)
-        return reading / self.average_readings / 1000.0
+        for _i in range(self.readings_to_average):
+            reading += self._adc.readADCSingleEnded(self._pin, self._gain, self._sps)
+        return reading / self.readings_to_average / 1000.0
 
+
+if __name__ == "__main__":
+
+    sensor0 = VH400MoistureSensor(pin=0)
+    print("Raw voltage: %s" % sensor0.raw_voltage)
+    print("Percent: %s" % sensor0.percent)
