@@ -106,7 +106,7 @@ class VH400MoistureSensor(object):
         if res < 0:
             return 0
         else:
-            return res * 1.476
+            return res * 1.5  # Scale result to 100% when entire green stick is submerged in water
 
     @property
     def raw_voltage(self):
