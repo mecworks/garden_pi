@@ -53,6 +53,9 @@ class Relay(object):
             self._relay.output(self._mcp_pin, self.ON)
             self.state = self.ON
 
+    def get_state(self):
+        return self.state
+
 
 if __name__ == '__main__':
 
