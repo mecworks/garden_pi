@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from common.relay import Relay
-from common.rc_sensor_cli import RcSensor
+from common.moisture_sensor import VH400MoistureSensor
 from common.temp_sensor import TempSensor
 import ConfigParser
 import time
@@ -21,14 +21,14 @@ class Zone (object):
     A Zone handles all the attributes and functions of a zone, sensing, watering, timings, etc.
     """
 
-    def __init__(self, name=None, alias=None, moisture_sensor_gpio=None, relay_gpio=None, moisture_water_threshold=None, watering_duration=None, min_seconds_between_waterings=18000, temp_sensor_id=None, temp_scale='f'):
+    def __init__(self, name=None, alias=None, moisture_sensor_pin=None, relay_gpio=None, moisture_water_threshold=None, watering_duration=None, min_seconds_between_waterings=18000, temp_sensor_id=None, temp_scale='f'):
         self.name = name
         self.alias = alias
-        if moisture_sensor_gpio in [None, 'None']:
+        if moisture_sensor_pin in [None, 'None']:
             self.moisture_sensor = None
         else:
-            self._moisture_sensor_gpio = moisture_sensor_gpio
-            self.moisture_sensor = RcSensor(self._moisture_sensor_gpio)
+            self._moisture_sensor_pin = moisture_sensor_pin
+            self.moisture_sensor = VH400MoistureSensor(self._moisture_sensor_pin)
         self._relay_gpio = relay_gpio
         self.relay = Relay(self._relay_gpio)
         self.moisture_water_threshold = moisture_water_threshold
@@ -113,10 +113,11 @@ class Zone (object):
     @property
     def moisture(self):
         """
-        Returns the RC sensor count for the moisture sensor
-        :return:
+        Returns the moisture sensor Volumetric Moisture Content Percentage
+
+        :return: float
         """
         if self.moisture_sensor is None:
             return None
         else:
-            return self.moisture_sensor.rc_count()
+            return self.moisture_sensor.percent
