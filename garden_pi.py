@@ -54,8 +54,8 @@ for zone_name in zone_names:
     min_seconds_between_waterings = conf_parser.getint(zone_name, 'min_seconds_between_waterings')
     garden_pi_zones[zone_name] = Zone(name=zone_name,
                                       alias=alias,
-                                      moisture_sensor_gpio=moisture_sensor_gpio,
-                                      relay_gpio=relay_gpio,
+                                      moisture_sensor_pin=moisture_sensor_gpio,
+                                      mcp_pin=relay_gpio,
                                       moisture_water_threshold=moisture_water_threshold,
                                       watering_duration=watering_duration,
                                       min_seconds_between_waterings=min_seconds_between_waterings,

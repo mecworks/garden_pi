@@ -21,7 +21,7 @@ class Zone (object):
     A Zone handles all the attributes and functions of a zone, sensing, watering, timings, etc.
     """
 
-    def __init__(self, name=None, alias=None, moisture_sensor_pin=None, relay_gpio=None, moisture_water_threshold=None, watering_duration=None, min_seconds_between_waterings=18000, temp_sensor_id=None, temp_scale='f'):
+    def __init__(self, name=None, alias=None, moisture_sensor_pin=None, mcp_pin=None, moisture_water_threshold=None, watering_duration=None, min_seconds_between_waterings=18000, temp_sensor_id=None, temp_scale='f'):
         self.name = name
         self.alias = alias
         if moisture_sensor_pin in [None, 'None']:
@@ -29,8 +29,8 @@ class Zone (object):
         else:
             self._moisture_sensor_pin = moisture_sensor_pin
             self.moisture_sensor = VH400MoistureSensor(self._moisture_sensor_pin)
-        self._relay_gpio = relay_gpio
-        self.relay = Relay(self._relay_gpio)
+        self._mcp_pin = mcp_pin
+        self.relay = Relay(self._mcp_pin)
         self.moisture_water_threshold = moisture_water_threshold
         self.watering_duration = watering_duration
         self.min_seconds_between_waterings = min_seconds_between_waterings

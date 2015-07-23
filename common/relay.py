@@ -1,40 +1,45 @@
 #!/usr/bin/env python
 
 # A Raspberry Pi GPIO based relay device
-
 import RPi.GPIO as GPIO
+from common.adafruit.Adafruit_MCP230xx.Adafruit_MCP230xx import Adafruit_MCP230XX
 
 class Relay(object):
 
-    def __init__(self, gpio_pin):
+    def __init__(self, mcp_pin):
         """
         Initialize a relay
 
-        :param gpio_pin: BCM gpio number that is connected to a relay
+        :param mcp_pin: BCM gpio number that is connected to a relay
         :return:
         """
         self.ON = 0
         self.OFF = 1
-        self.gpio_pin = gpio_pin
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self.gpio_pin, GPIO.OUT)
-        GPIO.output(gpio_pin, self.OFF)
+        self._i2c_address = 0x27
+        self._mcp_pin = mcp_pin
+        if GPIO.RPI_REVISION == 1:
+            i2c_busnum = 0
+        else:
+            i2c_busnum = 1
+        self._relay = Adafruit_MCP230XX(busnum=i2c_busnum, address=self._i2c_address, num_gpios = 16)
+        self._relay.output(self._mcp_pin, self.OFF)
+        self._relay.config(self._mcp_pin, self._relay.OUTPUT)
+        self._relay.output(self._mcp_pin, self.OFF)
         self.state = self.OFF
 
     def set_state(self, state):
         """
-        Set the state of the relay.  relay.ON, relay.OFF, True, False
+        Set the state of the relay.  relay.ON, relay.OFF
 
         :param state:
         :return:
         """
-        if state is True:
+        if state == self.ON:
+            self._relay.output(self._mcp_pin, self.ON)
             state = self.ON
-        elif state is False:
+        elif state == self.OFF:
+            self._relay.output(self._mcp_pin, self.OFF)
             state = self.OFF
-        else:
-            GPIO.output(self.gpio_pin, state)
-        self.state = state
 
     def toggle(self):
         """
@@ -42,31 +47,26 @@ class Relay(object):
         :return:
         """
         if self.state == self.ON:
-            GPIO.output(self.gpio_pin, self.OFF)
+            self._relay.output(self._mcp_pin, self.OFF)
             self.state = self.OFF
         else:
-            GPIO.output(self.gpio_pin, self.ON)
+            self._relay.output(self._mcp_pin, self.ON)
             self.state = self.ON
+
 
 if __name__ == '__main__':
 
-    import sys
     import time
-    
-    GPIO.setwarnings(False)
-    def usage(prog):
-        print('Usage: %s <gpio>' % prog)
-        sys.exit(0)
 
-    def main(argv):
-        try:
-            gpio = int(argv[1])
-        except:
-            usage(argv[0])
-        r = Relay(gpio)
+    pause = .15
+    for pin in range(16):
+        print("Pin: %s" % pin)
+        r = Relay(pin)
         r.set_state(r.ON)
-        time.sleep(10)
+        time.sleep(pause)
         r.set_state(r.OFF)
-        GPIO.cleanup()
-
-    main(sys.argv)
+        time.sleep(pause)
+        r.toggle()
+        time.sleep(pause)
+        r.toggle()
+        time.sleep(pause)
