@@ -6,9 +6,9 @@ from common.adafruit.Adafruit_MCP230xx.Adafruit_MCP230xx import Adafruit_MCP230X
 
 class Relay(object):
 
-    _mcp23017_chip = {}
+    _mcp23017_chip = {}  # Conceivably, we could have up to 8 of these as there are a possibility of 8 MCP chips on a bus.
 
-    def __init__(self, mcp_pin):
+    def __init__(self, mcp_pin, i2c_address=0x27):
         """
         Initialize a relay
 
@@ -17,15 +17,15 @@ class Relay(object):
         """
         self.ON = 0
         self.OFF = 1
-        self._i2c_address = 0x27
+        self._i2c_address = i2c_address
         self._mcp_pin = mcp_pin
         if GPIO.RPI_REVISION == 1:
             i2c_busnum = 0
         else:
             i2c_busnum = 1
-        if not self._mcp23017_chip.has_key('mcp_chip'):
-            self._mcp23017_chip['mcp_chip'] = Adafruit_MCP230XX(busnum=i2c_busnum, address=self._i2c_address, num_gpios=16)
-        self._relay = self._mcp23017_chip['mcp_chip']
+        if not self._mcp23017_chip.has_key(self._i2c_address):
+            self._mcp23017_chip[self._i2c_address] = Adafruit_MCP230XX(busnum=i2c_busnum, address=self._i2c_address, num_gpios=16)
+        self._relay = self._mcp23017_chip[self._i2c_address]
         self._relay.config(self._mcp_pin, self._relay.OUTPUT)
         self.state = self.OFF
 
