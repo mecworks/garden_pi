@@ -23,9 +23,9 @@ class Relay(object):
             i2c_busnum = 0
         else:
             i2c_busnum = 1
-        if not self._mcp23017_chip.has_key('relay'):
-            self._mcp23017_chip['relay'] = Adafruit_MCP230XX(busnum=i2c_busnum, address=self._i2c_address, num_gpios=16)
-        self._relay = self._mcp23017_chip['relay']
+        if not self._mcp23017_chip.has_key('mcp_chip'):
+            self._mcp23017_chip['mcp_chip'] = Adafruit_MCP230XX(busnum=i2c_busnum, address=self._i2c_address, num_gpios=16)
+        self._relay = self._mcp23017_chip['mcp_chip']
         self._relay.config(self._mcp_pin, self._relay.OUTPUT)
         self.state = self.OFF
 
