@@ -6,6 +6,8 @@ from common.adafruit.Adafruit_MCP230xx.Adafruit_MCP230xx import Adafruit_MCP230X
 
 class Relay(object):
 
+    _mcp23017_chip = {}
+
     def __init__(self, mcp_pin):
         """
         Initialize a relay
@@ -21,10 +23,10 @@ class Relay(object):
             i2c_busnum = 0
         else:
             i2c_busnum = 1
-        self._relay = Adafruit_MCP230XX(busnum=i2c_busnum, address=self._i2c_address, num_gpios = 16)
-        self._relay.output(self._mcp_pin, self.OFF)
+        if not self._mcp23017_chip.has_key('relay'):
+            self._mcp23017_chip['relay'] = Adafruit_MCP230XX(busnum=i2c_busnum, address=self._i2c_address, num_gpios=16)
+        self._relay = self._mcp23017_chip['relay']
         self._relay.config(self._mcp_pin, self._relay.OUTPUT)
-        self._relay.output(self._mcp_pin, self.OFF)
         self.state = self.OFF
 
     def set_state(self, state):
@@ -34,12 +36,13 @@ class Relay(object):
         :param state:
         :return:
         """
+
         if state == self.ON:
             self._relay.output(self._mcp_pin, self.ON)
-            state = self.ON
+            self.state = self.ON
         elif state == self.OFF:
             self._relay.output(self._mcp_pin, self.OFF)
-            state = self.OFF
+            self.state = self.OFF
 
     def toggle(self):
         """
@@ -73,3 +76,18 @@ if __name__ == '__main__':
         time.sleep(pause)
         r.toggle()
         time.sleep(pause)
+
+    r1 = Relay(10)
+    r2 = Relay(2)
+    r3 = Relay(15)
+
+    r1.set_state(r1.ON)
+    print(r1._mcp_pin)
+    r2.set_state(r2.ON)
+    print(r2._mcp_pin)
+    r3.set_state(r3.ON)
+    print(r3._mcp_pin)
+    time.sleep(1)
+    r1.set_state(r1.OFF)
+    r2.set_state(r2.OFF)
+    r3.set_state(r3.OFF)
