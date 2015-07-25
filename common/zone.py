@@ -28,7 +28,7 @@ class Zone (object):
             self.moisture_sensor = None
         else:
             self._moisture_sensor_pin = moisture_sensor_pin
-            self.moisture_sensor = VH400MoistureSensor(self._moisture_sensor_pin)
+            self.moisture_sensor = VH400MoistureSensor(pin=self._moisture_sensor_pin)
         self._mcp_pin = mcp_pin
         self.relay = Relay(self._mcp_pin)
         self.moisture_water_threshold = moisture_water_threshold
@@ -95,6 +95,16 @@ class Zone (object):
             self.relay.set_state(self.relay.ON)
         time.sleep(self.watering_duration)
         self.relay.set_state(self.relay.OFF)
+
+    @property
+    def seconds_before_ok_to_water(self):
+        now = time.time()
+        if self.state['last_water_time'] is None:  # Never been watered before (let the water function set this)
+            return None
+        if (now - self.state['last_water_time']) <= self.min_seconds_between_waterings:
+            return 0
+        else:
+            return self.min_seconds_between_waterings - now - self.state['last_water_time']
 
     @property
     def temp(self):
