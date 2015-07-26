@@ -1,55 +1,42 @@
 [main]
 ambient_temp_sensor = 28-000005f8d181
-ambient_light_sensor_gpio = 21
 temp_scale = Fahrenheit
 logfile = ./garden_pi.csv
 debug = False
 
 [zone_1]
 alias = Tomatoes
-moisture_sensor_gpio = 22
-moisture_sensor_dry = 7770
-moisture_sensor_water = 18500
-moisture_water_threshold = 14753
-moisture_after_water = 28941
-relay_gpio = 17
-temp_sensor_id = 28-000005760fd1
-watering_duration = 110
-min_seconds_between_waterings = 18000
+moisture_sensor_pin = 0
+moisture_water_threshold = 75
+relay_gpio = 0
+temp_sensor_id = 28-000005f7ef51
+watering_duration = 30
+min_seconds_between_waterings = 120
 
 [zone_2]
 alias = Tomatoes, Onions and Rosemary
-moisture_sensor_gpio = 23
-moisture_sensor_dry = 7118
-moisture_sensor_water = 17473
-moisture_water_threshold = 13299
-moisture_after_water = 23866
-relay_gpio = 15
-temp_sensor_id = 28-000005f7fe06
-watering_duration = 110
-min_seconds_between_waterings = 18000
+moisture_sensor_pin = 0
+moisture_water_threshold = 75
+relay_gpio = 1
+temp_sensor_id = 28-000005f7ef51
+watering_duration = 10
+min_seconds_between_waterings = 100
 
 [zone_3]
 alias = Basil
-moisture_sensor_gpio = 24
-moisture_sensor_dry = 7170
-moisture_sensor_water = 17159
-moisture_water_threshold = 14967
-moisture_after_water = 25348
-relay_gpio = 14
-temp_sensor_id = 28-000005f8081d
+moisture_sensor_pin = 0
+moisture_water_threshold = 75
+relay_gpio = 2
+temp_sensor_id = 28-000005f7ef51
 watering_duration = 20
-min_seconds_between_waterings = 18000
+min_seconds_between_waterings = 200
 
 [zone_4]
 alias = Mint
-moisture_sensor_gpio = 25
-moisture_sensor_dry = 7180
-moisture_sensor_water = 15456
-moisture_water_threshold = 14922
-moisture_after_water = 24525
-relay_gpio = 1
-temp_sensor_id = None
-watering_duration = 10
-min_seconds_between_waterings = 18000
+moisture_sensor_pin = 0
+moisture_water_threshold = 75
+relay_gpio = 3
+temp_sensor_id = 28-000005f7ef51
+watering_duration = 45
+min_seconds_between_waterings = 1
 
