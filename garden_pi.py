@@ -43,7 +43,7 @@ garden_pi_zones = {}
 for zone_name in zone_names:
     alias = conf_parser.get(zone_name, 'alias')
     moisture_sensor_pin = conf_parser.getint(zone_name, 'moisture_sensor_pin')
-    mcp_relay_pin = conf_parser.getint(zone_name, 'relay_pin')
+    mcp_relay_pin = conf_parser.getint(zone_name, 'relay_gpio')
     moisture_water_threshold = conf_parser.getint(zone_name, 'moisture_water_threshold')
     watering_duration = conf_parser.getint(zone_name, 'watering_duration')
     temp_sensor_id = conf_parser.get(zone_name, 'temp_sensor_id')
