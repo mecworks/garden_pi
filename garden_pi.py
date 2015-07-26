@@ -24,7 +24,6 @@ DEBUG = conf_parser.getboolean('main', 'debug')
 # General sensors
 ambient_temp_sensor_id = conf_parser.get('main', 'ambient_temp_sensor')
 ambient_temp_sensor = TempSensor(ambient_temp_sensor_id)
-ambient_light_sensor_gpio = conf_parser.getint('main', 'ambient_light_sensor_gpio')
 ambient_light_sensor = None  # TODO: We have no ambient light sensor until the tsl2561 sensor is working.  For now, output a space.
 c_temp = CpuTemp()
 temp_scale = conf_parser.get('main', 'temp_scale')
@@ -44,7 +43,7 @@ garden_pi_zones = {}
 for zone_name in zone_names:
     alias = conf_parser.get(zone_name, 'alias')
     moisture_sensor_pin = conf_parser.getint(zone_name, 'moisture_sensor_pin')
-    mcp_relay_pin = conf_parser.getint(zone_name, 'relay_gpio')
+    mcp_relay_pin = conf_parser.getint(zone_name, 'relay_pin')
     moisture_water_threshold = conf_parser.getint(zone_name, 'moisture_water_threshold')
     watering_duration = conf_parser.getint(zone_name, 'watering_duration')
     temp_sensor_id = conf_parser.get(zone_name, 'temp_sensor_id')
