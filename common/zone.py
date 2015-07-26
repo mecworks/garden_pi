@@ -99,12 +99,21 @@ class Zone (object):
     @property
     def seconds_before_ok_to_water(self):
         now = time.time()
-        if self.state['last_water_time'] is None:  # Never been watered before (let the water function set this)
-            return None
-        if (now - self.state['last_water_time']) <= self.min_seconds_between_waterings:
+        last_water_time = self.state['last_water_time']
+        elapsed_time = now - last_water_time
+        if DEBUG:
+            print('Min time between waterings: %s' % self.min_seconds_between_waterings)
+            print('Now: %s' % now)
+            print('Last water time: %s' % last_water_time)
+            print('now - last_water_time = %s' % elapsed_time)
+            print('min_time_between_waterings - (now - last_water_time) = %s' % str(self.min_seconds_between_waterings - elapsed_time))
+            print('')
+        if last_water_time is None:  # Never been watered before (let the water function set this)
+            return 0
+        if elapsed_time >= self.min_seconds_between_waterings:
             return 0
         else:
-            return self.min_seconds_between_waterings - now - self.state['last_water_time']
+            return self.min_seconds_between_waterings - elapsed_time
 
     @property
     def temp(self):
