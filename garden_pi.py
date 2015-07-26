@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # Pretty simple right now, just enough to water on a schedule and log the data
 
-import RPi.GPIO as GPIO
-GPIO.setwarnings(False)
 from common.zone import Zone
 from common.cpu_temp import CpuTemp
 from common.temp_sensor import TempSensor
@@ -162,41 +160,24 @@ def water_zone(zone_name, force_water=False):
     :type zone_name: str
     """
     water = False
+    msg = ' '
     if (garden_pi_zones[zone_name].seconds_before_ok_to_water == 0) and (garden_pi_zones[zone_name].moisture < garden_pi_zones[zone_name].moisture_water_threshold):
         water = True
+        msg = 'MOISTURE SENSOR'
     if force_water is True:
         water = True
+        msg = 'IMMEDIATE'
     if water is True:
         s = time.time()
-        garden_pi_logger.log_csv(messg='START WATERING (MOISTURE SENSOR): %s' % zone_name.upper())
+        garden_pi_logger.log_csv(messg='START WATERING (%s): %s' % (msg, zone_name.upper()))
         garden_pi_zones[zone_name].water()
         f = time.time()
-        garden_pi_logger.log_csv(messg='END WATERING (MOISTURE SENSOR): %s. Elapsed Time: %ss' % (zone_name.upper(), format_float(f-s)))
+        garden_pi_logger.log_csv(messg='END WATERING (%s): %s. Elapsed Time: %ss' % (msg, zone_name.upper(), format_float(f-s)))
 
-
-def water_zone_now(zone_name, force_water=False):
-    """
-    Water a zone.  Mostly used byt a scheduled watering (not a sensor based watering)
-    :param zone_name: The name of the zone as used in the zone section header in the config file (i.e. 'zone_1', 'zone_4')
-    :type zone_name: str
-    :return:
-    """
-    water = False
-    if garden_pi_zones[zone_name].seconds_before_ok_to_water == 0:
-        water = True
-    if force_water is True:
-        water = True
-    if water is True:
-        s = time.time()
-        garden_pi_logger.log_csv(messg='START WATERING (SCHEDULED): %s' % zone_name.upper())
-        garden_pi_zones[zone_name].water()
-        f = time.time()
-        garden_pi_logger.log_csv(messg='END WATERING (SCHEDULED): %s. Elapsed Time: %ss' % (zone_name.upper(), format_float(f-s)))
 
 
 def cleanup(force_exit=False):
     scheduler.shutdown(wait=False)
-    GPIO.cleanup()
     garden_pi_logger.log_csv(messg="SHUTTING DOWN")
     if force_exit is True:
         sys.exit(0)
