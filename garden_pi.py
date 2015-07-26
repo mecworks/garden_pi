@@ -161,13 +161,20 @@ def water_zone(zone_name, force_water=False):
     """
     water = False
     msg = ' '
+    # print('%s: Seconds_before_ok_to_water: %s' % (zone_name, garden_pi_zones[zone_name].seconds_before_ok_to_water))
+    # print('%s: Moisture: %s' % (zone_name, garden_pi_zones[zone_name].moisture))
+    # print('%s: Moisture threshold: %s' % (zone_name, garden_pi_zones[zone_name].moisture_water_threshold))
     if (garden_pi_zones[zone_name].seconds_before_ok_to_water == 0) and (garden_pi_zones[zone_name].moisture < garden_pi_zones[zone_name].moisture_water_threshold):
+        # print("In 1")
         water = True
         msg = 'MOISTURE SENSOR'
     if force_water is True:
+        # print("In 2")
         water = True
         msg = 'IMMEDIATE'
+    #print("%s: Water: %s" % (zone_name, water))
     if water is True:
+        # print("In 3")
         s = time.time()
         garden_pi_logger.log_csv(messg='START WATERING (%s): %s' % (msg, zone_name.upper()))
         garden_pi_zones[zone_name].water()
@@ -203,7 +210,8 @@ measurement_data = MeasurementData()
 scheduler.add_job(log_measurements, args=[measurement_data], trigger='cron', minute='*', name='Data Logger', id='data_logger', max_instances=1, misfire_grace_time=20)
 for zone_name in garden_pi_zones.keys():
     #scheduler.add_job(water_zone, trigger='cron', hour='7,18', minute=15, args=[zone_name], name=zone_name, max_instances=1, misfire_grace_time=20)
-    scheduler.add_job(water_zone, trigger='cron', minute="*", args=[zone_name], name=zone_name, max_instances=1, misfire_grace_time=20)
+    scheduler.add_job(water_zone, trigger='cron', minute="*", kwargs={'zone_name': zone_name, 'force_water': False}, name=zone_name, max_instances=1, misfire_grace_time=20)
+
 scheduler.start()
 for job in scheduler.get_jobs():
     print("Job: %s, Func: %s, Next run time: %s" % (job.name, job.func_ref, job.next_run_time))
